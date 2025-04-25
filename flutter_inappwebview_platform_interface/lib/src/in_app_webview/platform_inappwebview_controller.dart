@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:typed_data';
@@ -5,27 +6,46 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../context_menu/main.dart';
 import '../debug_logging_settings.dart';
+import '../find_interaction/platform_find_interaction_controller.dart';
+import '../in_app_browser/platform_in_app_browser.dart';
 import '../inappwebview_platform.dart';
+import '../platform_webview_feature.dart';
+import '../print_job/main.dart';
+import '../types/main.dart';
 import '../web_message/main.dart';
 import '../web_storage/platform_web_storage.dart';
 import '../web_uri.dart';
 
-import '../types/main.dart';
-import '../in_app_browser/platform_in_app_browser.dart';
-import 'platform_headless_in_app_webview.dart';
-import 'platform_inappwebview_widget.dart';
-import '../platform_webview_feature.dart';
-import '../find_interaction/platform_find_interaction_controller.dart';
-
-import 'platform_webview.dart';
 import 'in_app_webview_keep_alive.dart';
 import 'in_app_webview_settings.dart';
+import 'platform_headless_in_app_webview.dart';
+import 'platform_inappwebview_widget.dart';
+import 'platform_webview.dart';
 
-import '../print_job/main.dart';
+///List of forbidden names for JavaScript handlers used internally bu the plugin.
+final kJavaScriptHandlerForbiddenNames = UnmodifiableListView<String>([
+  "onLoadResource",
+  "onConsoleMessage",
+  "shouldInterceptAjaxRequest",
+  "onAjaxReadyStateChange",
+  "onAjaxProgress",
+  "shouldInterceptFetchRequest",
+  "onPrintRequest",
+  "onWindowFocus",
+  "onWindowBlur",
+  "callAsyncJavaScript",
+  "evaluateJavaScriptWithContentWorld",
+  "onFindResultReceived",
+  "onCallAsyncJavaScriptResultBelowIOS14Received",
+  "onWebMessagePortMessageReceived",
+  "onWebMessageListenerPostMessageReceived",
+  "onScrollChanged"
+]);
 
 /// Object specifying creation parameters for creating a [PlatformInAppWebViewController].
 ///
@@ -134,6 +154,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.url](https://developer.apple.com/documentation/webkit/wkwebview/1415005-url))
   ///- MacOS ([Official API - WKWebView.url](https://developer.apple.com/documentation/webkit/wkwebview/1415005-url))
   ///- Web
+  ///- Windows ([Official API - ICoreWebView2.get_Source](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#get_source))
   ///{@endtemplate}
   Future<WebUri?> getUrl() {
     throw UnimplementedError(
@@ -150,6 +171,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.title](https://developer.apple.com/documentation/webkit/wkwebview/1415015-title))
   ///- MacOS ([Official API - WKWebView.title](https://developer.apple.com/documentation/webkit/wkwebview/1415015-title))
   ///- Web
+  ///- Windows ([Official API - ICoreWebView2.get_DocumentTitle](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#get_documenttitle))
   ///{@endtemplate}
   Future<String?> getTitle() {
     throw UnimplementedError(
@@ -224,6 +246,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.load](https://developer.apple.com/documentation/webkit/wkwebview/1414954-load). If [allowingReadAccessTo] is used, [Official API - WKWebView.loadFileURL](https://developer.apple.com/documentation/webkit/wkwebview/1414973-loadfileurl))
   ///- MacOS ([Official API - WKWebView.load](https://developer.apple.com/documentation/webkit/wkwebview/1414954-load). If [allowingReadAccessTo] is used, [Official API - WKWebView.loadFileURL](https://developer.apple.com/documentation/webkit/wkwebview/1414973-loadfileurl))
   ///- Web
+  ///- Windows ([Official API - ICoreWebView2_2.NavigateWithWebResourceRequest](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2_2?view=webview2-1.0.2210.55#navigatewithwebresourcerequest))
   ///{@endtemplate}
   Future<void> loadUrl(
       {required URLRequest urlRequest,
@@ -271,11 +294,14 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///Specify a directory to give WebView permission to read additional files in the specified directory.
   ///**NOTE**: available only on iOS and MacOS.
   ///
+  ///**NOTE for Windows**: only the [data] parameter is used.
+  ///
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView ([Official API - WebView.loadDataWithBaseURL](https://developer.android.com/reference/android/webkit/WebView#loadDataWithBaseURL(java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String,%20java.lang.String)))
   ///- iOS ([Official API - WKWebView.loadHTMLString](https://developer.apple.com/documentation/webkit/wkwebview/1415004-loadhtmlstring) or [Official API - WKWebView.load](https://developer.apple.com/documentation/webkit/wkwebview/1415011-load))
   ///- MacOS ([Official API - WKWebView.loadHTMLString](https://developer.apple.com/documentation/webkit/wkwebview/1415004-loadhtmlstring) or [Official API - WKWebView.load](https://developer.apple.com/documentation/webkit/wkwebview/1415011-load))
   ///- Web
+  ///- Windows ([Official API - ICoreWebView2.NavigateToString](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#navigatetostring))
   ///{@endtemplate}
   Future<void> loadData(
       {required String data,
@@ -327,6 +353,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.load](https://developer.apple.com/documentation/webkit/wkwebview/1414954-load))
   ///- MacOS ([Official API - WKWebView.load](https://developer.apple.com/documentation/webkit/wkwebview/1414954-load))
   ///- Web
+  ///- Windows ([Official API - ICoreWebView2.Navigate](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#navigate))
   ///{@endtemplate}
   Future<void> loadFile({required String assetFilePath}) {
     throw UnimplementedError(
@@ -343,6 +370,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.reload](https://developer.apple.com/documentation/webkit/wkwebview/1414969-reload))
   ///- MacOS ([Official API - WKWebView.reload](https://developer.apple.com/documentation/webkit/wkwebview/1414969-reload))
   ///- Web ([Official API - Location.reload](https://developer.mozilla.org/en-US/docs/Web/API/Location/reload))
+  ///- Windows ([Official API - ICoreWebView2.Reload](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#reload))
   ///{@endtemplate}
   Future<void> reload() {
     throw UnimplementedError(
@@ -359,6 +387,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.goBack](https://developer.apple.com/documentation/webkit/wkwebview/1414952-goback))
   ///- MacOS ([Official API - WKWebView.goBack](https://developer.apple.com/documentation/webkit/wkwebview/1414952-goback))
   ///- Web ([Official API - History.back](https://developer.mozilla.org/en-US/docs/Web/API/History/back))
+  ///- Windows ([Official API - ICoreWebView2.GoBack](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#goback))
   ///{@endtemplate}
   Future<void> goBack() {
     throw UnimplementedError(
@@ -372,6 +401,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView ([Official API - WebView.canGoBack](https://developer.android.com/reference/android/webkit/WebView#canGoBack()))
   ///- iOS ([Official API - WKWebView.canGoBack](https://developer.apple.com/documentation/webkit/wkwebview/1414966-cangoback))
   ///- MacOS ([Official API - WKWebView.canGoBack](https://developer.apple.com/documentation/webkit/wkwebview/1414966-cangoback))
+  ///- Windows ([Official API - ICoreWebView2.get_CanGoBack](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#get_cangoback))
   ///{@endtemplate}
   Future<bool> canGoBack() {
     throw UnimplementedError(
@@ -388,6 +418,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.goForward](https://developer.apple.com/documentation/webkit/wkwebview/1414993-goforward))
   ///- MacOS ([Official API - WKWebView.goForward](https://developer.apple.com/documentation/webkit/wkwebview/1414993-goforward))
   ///- Web ([Official API - History.forward](https://developer.mozilla.org/en-US/docs/Web/API/History/forward))
+  ///- Windows ([Official API - ICoreWebView2.GoForward](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#goforward))
   ///{@endtemplate}
   Future<void> goForward() {
     throw UnimplementedError(
@@ -401,6 +432,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView ([Official API - WebView.canGoForward](https://developer.android.com/reference/android/webkit/WebView#canGoForward()))
   ///- iOS ([Official API - WKWebView.canGoForward](https://developer.apple.com/documentation/webkit/wkwebview/1414962-cangoforward))
   ///- MacOS ([Official API - WKWebView.canGoForward](https://developer.apple.com/documentation/webkit/wkwebview/1414962-cangoforward))
+  ///- Windows ([Official API - ICoreWebView2.get_CanGoForward](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#get_cangoforward))
   ///{@endtemplate}
   Future<bool> canGoForward() {
     throw UnimplementedError(
@@ -417,6 +449,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.go](https://developer.apple.com/documentation/webkit/wkwebview/1414991-go))
   ///- MacOS ([Official API - WKWebView.go](https://developer.apple.com/documentation/webkit/wkwebview/1414991-go))
   ///- Web ([Official API - History.go](https://developer.mozilla.org/en-US/docs/Web/API/History/go))
+  ///- Windows
   ///{@endtemplate}
   Future<void> goBackOrForward({required int steps}) {
     throw UnimplementedError(
@@ -430,6 +463,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView ([Official API - WebView.canGoBackOrForward](https://developer.android.com/reference/android/webkit/WebView#canGoBackOrForward(int)))
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   Future<bool> canGoBackOrForward({required int steps}) {
     throw UnimplementedError(
@@ -446,6 +480,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS
   ///- MacOS
   ///- Web
+  ///- Windows
   ///{@endtemplate}
   Future<void> goTo({required WebHistoryItem historyItem}) {
     throw UnimplementedError('goTo is not implemented on the current platform');
@@ -459,6 +494,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS
   ///- MacOS
   ///- Web
+  ///- Windows
   ///{@endtemplate}
   Future<bool> isLoading() {
     throw UnimplementedError(
@@ -475,6 +511,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.stopLoading](https://developer.apple.com/documentation/webkit/wkwebview/1414981-stoploading))
   ///- MacOS ([Official API - WKWebView.stopLoading](https://developer.apple.com/documentation/webkit/wkwebview/1414981-stoploading))
   ///- Web ([Official API - Window.stop](https://developer.mozilla.org/en-US/docs/Web/API/Window/stop))
+  ///- Windows ([Official API - ICoreWebView2.Stop](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#stop))
   ///{@endtemplate}
   Future<void> stopLoading() {
     throw UnimplementedError(
@@ -490,7 +527,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///Those changes remain visible to all scripts, regardless of which content world you specify.
   ///For more information about content worlds, see [ContentWorld].
   ///Available on iOS 14.0+ and MacOS 11.0+.
-  ///**NOTE**: not used on Web.
+  ///**NOTE**: not used on Web and on Windows platforms.
   ///
   ///**NOTE**: This method shouldn't be called in the [PlatformWebViewCreationParams.onWebViewCreated] or [PlatformWebViewCreationParams.onLoadStart] events,
   ///because, in these events, the `WebView` is not ready to handle it yet.
@@ -504,6 +541,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS ([Official API - WKWebView.evaluateJavascript](https://developer.apple.com/documentation/webkit/wkwebview/3656442-evaluatejavascript))
   ///- MacOS ([Official API - WKWebView.evaluateJavascript](https://developer.apple.com/documentation/webkit/wkwebview/3656442-evaluatejavascript))
   ///- Web ([Official API - Window.eval](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval?retiredLocale=it))
+  ///- Windows
   ///{@endtemplate}
   Future<dynamic> evaluateJavascript(
       {required String source, ContentWorld? contentWorld}) {
@@ -551,6 +589,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- iOS
   ///- MacOS
   ///- Web
+  ///- Windows
   ///{@endtemplate}
   Future<dynamic> injectJavascriptFileFromAsset(
       {required String assetFilePath}) {
@@ -626,10 +665,11 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   }
 
   ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.addJavaScriptHandler}
-  ///Adds a JavaScript message handler [callback] ([JavaScriptHandlerCallback]) that listen to post messages sent from JavaScript by the handler with name [handlerName].
+  ///Adds a JavaScript message handler [callback] ([JavaScriptHandlerCallback] or [JavaScriptHandlerFunction]) that listen to post messages sent from JavaScript by the handler with name [handlerName].
+  ///Forbidden [handlerName]s are represented by [kJavaScriptHandlerForbiddenNames], they are used internally by this plugin.
   ///
   ///The Android implementation uses [addJavascriptInterface](https://developer.android.com/reference/android/webkit/WebView#addJavascriptInterface(java.lang.Object,%20java.lang.String)).
-  ///The iOS implementation uses [addScriptMessageHandler](https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1537172-addscriptmessagehandler?language=objc)
+  ///The iOS/macOS implementation uses [addScriptMessageHandler](https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1537172-addscriptmessagehandler?language=objc)
   ///
   ///The JavaScript function that can be used to call the handler is `window.flutter_inappwebview.callHandler(handlerName <String>, ...args)`, where `args` are [rest parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters).
   ///The `args` will be stringified automatically using `JSON.stringify(args)` method and then they will be decoded on the Dart side.
@@ -643,7 +683,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///```
   ///
   ///`window.flutter_inappwebview.callHandler` returns a JavaScript [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
-  ///that can be used to get the json result returned by [JavaScriptHandlerCallback].
+  ///that can be used to get the json result returned by [JavaScriptHandlerCallback] or [JavaScriptHandlerFunction].
   ///In this case, simply return data that you want to send and it will be automatically json encoded using [jsonEncode] from the `dart:convert` library.
   ///
   ///So, on the JavaScript side, to get data coming from the Dart side, you will use:
@@ -681,10 +721,10 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   void addJavaScriptHandler(
-      {required String handlerName,
-      required JavaScriptHandlerCallback callback}) {
+      {required String handlerName, required Function callback}) {
     throw UnimplementedError(
         'addJavaScriptHandler is not implemented on the current platform');
   }
@@ -698,9 +738,9 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
-  JavaScriptHandlerCallback? removeJavaScriptHandler(
-      {required String handlerName}) {
+  Function? removeJavaScriptHandler({required String handlerName}) {
     throw UnimplementedError(
         'removeJavaScriptHandler is not implemented on the current platform');
   }
@@ -712,6 +752,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   bool hasJavaScriptHandler({required String handlerName}) {
     throw UnimplementedError(
@@ -727,10 +768,14 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///
   ///**NOTE for MacOS**: available on MacOS 10.13+.
   ///
+  ///**NOTE for Android**: To be able to take screenshots outside the visible viewport,
+  ///you must call [PlatformInAppWebViewController.enableSlowWholeDocumentDraw] before any WebViews are created.
+  ///
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView
   ///- iOS ([Official API - WKWebView.takeSnapshot](https://developer.apple.com/documentation/webkit/wkwebview/2873260-takesnapshot))
   ///- MacOS ([Official API - WKWebView.takeSnapshot](https://developer.apple.com/documentation/webkit/wkwebview/2873260-takesnapshot))
+  ///- Windows
   ///{@endtemplate}
   Future<Uint8List?> takeScreenshot(
       {ScreenshotConfiguration? screenshotConfiguration}) {
@@ -776,6 +821,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView ([Official API - WebView.copyBackForwardList](https://developer.android.com/reference/android/webkit/WebView#copyBackForwardList()))
   ///- iOS ([Official API - WKWebView.backForwardList](https://developer.apple.com/documentation/webkit/wkwebview/1414977-backforwardlist))
   ///- MacOS ([Official API - WKWebView.backForwardList](https://developer.apple.com/documentation/webkit/wkwebview/1414977-backforwardlist))
+  ///- Windows
   ///{@endtemplate}
   Future<WebHistory?> getCopyBackForwardList() {
     throw UnimplementedError(
@@ -984,6 +1030,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView
   ///- iOS ([Official API - UIScrollView.zoomScale](https://developer.apple.com/documentation/uikit/uiscrollview/1619419-zoomscale))
+  ///- Windows ([Official API - ICoreWebView2Controller.get_ZoomFactor](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2controller?view=webview2-1.0.2849.39#get_zoomfactor))
   ///{@endtemplate}
   Future<double?> getZoomScale() {
     throw UnimplementedError(
@@ -1024,16 +1071,74 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
         'getHitTestResult is not implemented on the current platform');
   }
 
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.requestFocus}
+  ///Call this method when you want to try the WebView to be the first responder.
+  ///
+  ///On Android, call this to try to give focus to the WebView and
+  ///give it hints about the [direction] and a specific [previouslyFocusedRect] that the focus is coming from.
+  ///The [previouslyFocusedRect] can help give larger views a finer grained hint about where focus is coming from,
+  ///and therefore, where to show selection, or forward focus change internally.
+  ///
+  ///Returns `true` whether this WebView actually took focus; otherwise, `false`.
+  ///
+  ///**NOTE**: [direction] and [previouslyFocusedRect] are available only on Android.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Android native WebView ([Official API - WebView.requestFocus](https://developer.android.com/reference/android/webkit/WebView#requestFocus(int,%20android.graphics.Rect)))
+  ///- iOS ([Official API - UIResponder.becomeFirstResponder](https://developer.apple.com/documentation/uikit/uiresponder/1621113-becomefirstresponder))
+  ///- MacOS ([Official API - NSWindow.makeFirstResponder](https://developer.apple.com/documentation/appkit/nswindow/1419366-makefirstresponder))
+  ///{@endtemplate}
+  Future<bool?> requestFocus(
+      {FocusDirection? direction, InAppWebViewRect? previouslyFocusedRect}) {
+    throw UnimplementedError(
+        'requestFocus is not implemented on the current platform');
+  }
+
   ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.clearFocus}
   ///Clears the current focus. On iOS and Android native WebView, it will clear also, for example, the current text selection.
   ///
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView ([Official API - ViewGroup.clearFocus](https://developer.android.com/reference/android/view/ViewGroup#clearFocus()))
   ///- iOS ([Official API - UIResponder.resignFirstResponder](https://developer.apple.com/documentation/uikit/uiresponder/1621097-resignfirstresponder))
+  ///- MacOS ([Official API - NSWindow.makeFirstResponder](https://developer.apple.com/documentation/appkit/nswindow/1419366-makefirstresponder))
   ///{@endtemplate}
   Future<void> clearFocus() {
     throw UnimplementedError(
         'clearFocus is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.setInputMethodEnabled}
+  ///Enables/Disables the input method (system-supplied keyboard) whilst interacting with the webview.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- iOS ([Official API - UIResponder.inputView](https://developer.apple.com/documentation/uikit/uiresponder/1621092-inputview))
+  ///{@endtemplate}
+  Future<void> setInputMethodEnabled(bool enabled) {
+    throw UnimplementedError(
+        'setInputMethodEnabled is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.showInputMethod}
+  ///Explicitly request that the current input method's soft input area be shown to the user, if needed.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Android native WebView ([Official API - InputMethodManager.showSoftInput](https://developer.android.com/reference/android/view/inputmethod/InputMethodManager#showSoftInput(android.view.View,%20int)))
+  ///{@endtemplate}
+  Future<void> showInputMethod() {
+    throw UnimplementedError(
+        'showInputMethod is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.hideInputMethod}
+  ///Request to hide the soft input view from the context of the view that is currently accepting input.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Android native WebView ([Official API - InputMethodManager.hideSoftInputFromWindow](https://developer.android.com/reference/android/view/inputmethod/InputMethodManager#hideSoftInputFromWindow(android.os.IBinder,%20int)))
+  ///- iOS ([Official API - UIView.endEditing](https://developer.apple.com/documentation/uikit/uiview/1619630-endediting))
+  ///{@endtemplate}
+  Future<void> hideInputMethod() {
+    throw UnimplementedError(
+        'hideInputMethod is not implemented on the current platform');
   }
 
   ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.setContextMenu}
@@ -1156,6 +1261,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView ([Official API - WebView.getCertificate](https://developer.android.com/reference/android/webkit/WebView#getCertificate()))
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   Future<SslCertificate?> getCertificate() {
     throw UnimplementedError(
@@ -1173,6 +1279,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS ([Official API - WKUserContentController.addUserScript](https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1537448-adduserscript))
   ///- MacOS ([Official API - WKUserContentController.addUserScript](https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1537448-adduserscript))
+  ///- Windows
   ///{@endtemplate}
   Future<void> addUserScript({required UserScript userScript}) {
     throw UnimplementedError(
@@ -1190,6 +1297,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   Future<void> addUserScripts({required List<UserScript> userScripts}) {
     throw UnimplementedError(
@@ -1209,6 +1317,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   Future<bool> removeUserScript({required UserScript userScript}) {
     throw UnimplementedError(
@@ -1227,6 +1336,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   Future<void> removeUserScriptsByGroupName({required String groupName}) {
     throw UnimplementedError(
@@ -1245,6 +1355,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   Future<void> removeUserScripts({required List<UserScript> userScripts}) {
     throw UnimplementedError(
@@ -1262,6 +1373,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS ([Official API - WKUserContentController.removeAllUserScripts](https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1536540-removealluserscripts))
   ///- MacOS ([Official API - WKUserContentController.removeAllUserScripts](https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1536540-removealluserscripts))
+  ///- Windows
   ///{@endtemplate}
   Future<void> removeAllUserScripts() {
     throw UnimplementedError(
@@ -1275,6 +1387,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS
   ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   bool hasUserScript({required UserScript userScript}) {
     throw UnimplementedError(
@@ -1315,6 +1428,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///- Android native WebView
   ///- iOS ([Official API - WKWebView.callAsyncJavaScript](https://developer.apple.com/documentation/webkit/wkwebview/3656441-callasyncjavascript))
   ///- MacOS ([Official API - WKWebView.callAsyncJavaScript](https://developer.apple.com/documentation/webkit/wkwebview/3656441-callasyncjavascript))
+  ///- Windows
   ///{@endtemplate}
   Future<CallAsyncJavaScriptResult?> callAsyncJavaScript(
       {required String functionBody,
@@ -1661,6 +1775,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView ([Official API - WebView.clearSslPreferences](https://developer.android.com/reference/android/webkit/WebView#clearSslPreferences()))
+  ///- Windows ([Official API - ICoreWebView2_3.ClearServerCertificateErrorActions](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2_14?view=webview2-1.0.2792.45#clearservercertificateerroractions))
   ///{@endtemplate}
   Future<void> clearSslPreferences() {
     throw UnimplementedError(
@@ -1673,6 +1788,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView ([Official API - WebView.onPause](https://developer.android.com/reference/android/webkit/WebView#onPause()))
+  ///- Windows ([Official API - ICoreWebView2_3.TrySuspend](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2_3?view=webview2-1.0.2792.45#trysuspend)
   ///{@endtemplate}
   Future<void> pause() {
     throw UnimplementedError(
@@ -1684,6 +1800,7 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView ([Official API - WebView.onResume](https://developer.android.com/reference/android/webkit/WebView#onResume()))
+  ///- Windows ([Official API - ICoreWebView2_3.Resume](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2_3?view=webview2-1.0.2792.45#resume)
   ///{@endtemplate}
   Future<void> resume() {
     throw UnimplementedError(
@@ -2011,6 +2128,76 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
         'loadSimulatedRequest is not implemented on the current platform');
   }
 
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.openDevTools}
+  ///Opens the DevTools window for the current document in the WebView.
+  ///Does nothing if run when the DevTools window is already open.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - ICoreWebView2.OpenDevToolsWindow](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#opendevtoolswindow))
+  ///{@endtemplate}
+  Future<void> openDevTools() {
+    throw UnimplementedError(
+        'openDevTools is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.callDevToolsProtocolMethod}
+  ///Runs an asynchronous `DevToolsProtocol` method.
+  ///
+  ///For more information about available methods, navigate to [DevTools Protocol Viewer](https://chromedevtools.github.io/devtools-protocol/tot).
+  ///The [methodName] parameter is the full name of the method in the `{domain}.{method}` format.
+  ///The [parameters] will be a JSON formatted string containing the parameters for the corresponding method.
+  ///This function throws an error if the [methodName] is unknown or the [parameters] has an error.
+  ///In the case of such an error, the [parameters] parameter of the
+  ///handler will include information about the error.
+  ///Note even though WebView dispatches the CDP messages in the order called,
+  ///CDP method calls may be processed out of order.
+  ///If you require CDP methods to run in a particular order, you should wait for
+  ///the previous method's completed handler to run before calling the next method.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - ICoreWebView2.CallDevToolsProtocolMethod](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.2210.55#calldevtoolsprotocolmethod))
+  ///{@endtemplate}
+  Future<dynamic> callDevToolsProtocolMethod(
+      {required String methodName, Map<String, dynamic>? parameters}) {
+    throw UnimplementedError(
+        'callDevToolsProtocolMethod is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.addDevToolsProtocolEventListener}
+  ///Subscribe to a `DevToolsProtocol` event.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - ICoreWebView2DevToolsProtocolEventReceiver.add_DevToolsProtocolEventReceived](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2devtoolsprotocoleventreceiver?view=webview2-1.0.2210.55#add_devtoolsprotocoleventreceived))
+  ///{@endtemplate}
+  Future<void> addDevToolsProtocolEventListener(
+      {required String eventName, required Function(dynamic data) callback}) {
+    throw UnimplementedError(
+        'addDevToolsProtocolEventListener is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.removeDevToolsProtocolEventListener}
+  ///Remove an event handler previously added with [addDevToolsProtocolEventListener].
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - ICoreWebView2DevToolsProtocolEventReceiver.remove_DevToolsProtocolEventReceived](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2devtoolsprotocoleventreceiver?view=webview2-1.0.2210.55#remove_devtoolsprotocoleventreceived))
+  ///{@endtemplate}
+  Future<void> removeDevToolsProtocolEventListener(
+      {required String eventName}) {
+    throw UnimplementedError(
+        'removeDevToolsProtocolEventListener is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.isInterfaceSupported}
+  ///Returns `true` if the WebView supports the specified [interface], otherwise `false`.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows
+  ///{@endtemplate}
+  Future<bool> isInterfaceSupported(WebViewInterface interface) async {
+    throw UnimplementedError(
+        'isInterfaceSupported is not implemented on the current platform');
+  }
+
   ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.getIFrameId}
   ///Returns the iframe `id` attribute used on the Web platform.
   ///
@@ -2218,6 +2405,8 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView
   ///- iOS
+  ///- MacOS
+  ///- Windows
   ///{@endtemplate}
   Future<void> disposeKeepAlive(InAppWebViewKeepAlive keepAlive) {
     throw UnimplementedError(
@@ -2237,6 +2426,64 @@ abstract class PlatformInAppWebViewController extends PlatformInterface
   Future<void> clearAllCache({bool includeDiskFiles = true}) {
     throw UnimplementedError(
         'clearAllCache is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.enableSlowWholeDocumentDraw}
+  ///For apps targeting the L release, WebView has a new default behavior that reduces memory footprint and increases
+  ///performance by intelligently choosing the portion of the HTML document that needs to be drawn.
+  ///These optimizations are transparent to the developers.
+  ///However, under certain circumstances, an App developer may want to disable them, for example
+  ///when an app draws and accesses portions of the page that is way outside the visible portion of the page.
+  ///Enabling drawing the entire HTML document has a significant performance cost.
+  ///
+  ///**NOTE**: This method should be called before any WebViews are created.
+  ///
+  ///**NOTE for Android**: available only on Android 21+.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Android native WebView ([Official API - WebView.enableSlowWholeDocumentDraw](https://developer.android.com/reference/android/webkit/WebView#enableSlowWholeDocumentDraw()))
+  ///{@endtemplate}
+  Future<void> enableSlowWholeDocumentDraw() {
+    throw UnimplementedError(
+        'enableSlowWholeDocumentDraw is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.setJavaScriptBridgeName}
+  ///Sets the name of the JavaScript Bridge object that will be used to interact with the WebView.
+  ///This method should be called before any WebViews are created or when there are no WebViews.
+  ///Calling this method after a WebView has been created will not change
+  ///the current JavaScript Bridge object and could lead to errors.
+  ///
+  ///The [bridgeName] must be a non-empty string with only alphanumeric and underscore characters.
+  ///It can't start with a number.
+  ///
+  ///The default name used by this plugin is `flutter_inappwebview`.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Android native WebView
+  ///- iOS
+  ///- macOS
+  ///- Windows
+  ///{@endtemplate}
+  Future<void> setJavaScriptBridgeName(String bridgeName) {
+    throw UnimplementedError(
+        'setJavaScriptBridgeName is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.getJavaScriptBridgeName}
+  ///Gets the name of the JavaScript Bridge object that is used to interact with the WebView.
+  ///Use [setJavaScriptBridgeName] to set a custom name.
+  ///The default name used by this plugin is `flutter_inappwebview`.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Android native WebView
+  ///- iOS
+  ///- macOS
+  ///- Windows
+  ///{@endtemplate}
+  Future<String> getJavaScriptBridgeName() {
+    throw UnimplementedError(
+        'getJavaScriptBridgeName is not implemented on the current platform');
   }
 
   ///{@template flutter_inappwebview_platform_interface.PlatformInAppWebViewController.tRexRunnerHtml}

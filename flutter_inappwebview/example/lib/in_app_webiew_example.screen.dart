@@ -1,4 +1,5 @@
 import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -73,8 +74,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
             onRefresh: () async {
               if (defaultTargetPlatform == TargetPlatform.android) {
                 webViewController?.reload();
-              } else if (defaultTargetPlatform == TargetPlatform.iOS ||
-                  defaultTargetPlatform == TargetPlatform.macOS) {
+              } else if (defaultTargetPlatform == TargetPlatform.iOS) {
                 webViewController?.loadUrl(
                     urlRequest:
                         URLRequest(url: await webViewController?.getUrl()));
@@ -115,6 +115,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
               children: [
                 InAppWebView(
                   key: webViewKey,
+                  webViewEnvironment: webViewEnvironment,
                   initialUrlRequest:
                       URLRequest(url: WebUri('https://flutter.dev')),
                   // initialUrlRequest:
@@ -127,13 +128,13 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
                   onWebViewCreated: (controller) async {
                     webViewController = controller;
                   },
-                  onLoadStart: (controller, url) async {
+                  onLoadStart: (controller, url) {
                     setState(() {
                       this.url = url.toString();
                       urlController.text = this.url;
                     });
                   },
-                  onPermissionRequest: (controller, request) async {
+                  onPermissionRequest: (controller, request) {
                     return PermissionResponse(
                         resources: request.resources,
                         action: PermissionResponseAction.GRANT);
@@ -163,7 +164,7 @@ class _InAppWebViewExampleScreenState extends State<InAppWebViewExampleScreen> {
 
                     return NavigationActionPolicy.ALLOW;
                   },
-                  onLoadStop: (controller, url) async {
+                  onLoadStop: (controller, url) {
                     pullToRefreshController?.endRefreshing();
                     setState(() {
                       this.url = url.toString();

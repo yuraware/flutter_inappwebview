@@ -15,25 +15,27 @@ class MyInAppBrowser extends InAppBrowser {
       UnmodifiableListView<UserScript>? initialUserScripts,
       PullToRefreshController? pullToRefreshController})
       : super(
-            windowId: windowId,
-            initialUserScripts: initialUserScripts,
-            pullToRefreshController: pullToRefreshController);
+          windowId: windowId,
+          initialUserScripts: initialUserScripts,
+          pullToRefreshController: pullToRefreshController,
+          webViewEnvironment: webViewEnvironment,
+        );
 
   @override
-  Future onBrowserCreated() async {
+  void onBrowserCreated() {
     print("\n\nBrowser Created!\n\n");
   }
 
   @override
-  Future onLoadStart(url) async {}
+  void onLoadStart(url) {}
 
   @override
-  Future onLoadStop(url) async {
+  void onLoadStop(url) {
     pullToRefreshController?.endRefreshing();
   }
 
   @override
-  Future<PermissionResponse> onPermissionRequest(request) async {
+  FutureOr<PermissionResponse> onPermissionRequest(request) {
     return PermissionResponse(
         resources: request.resources, action: PermissionResponseAction.GRANT);
   }
@@ -56,8 +58,8 @@ class MyInAppBrowser extends InAppBrowser {
   }
 
   @override
-  Future<NavigationActionPolicy> shouldOverrideUrlLoading(
-      navigationAction) async {
+  FutureOr<NavigationActionPolicy> shouldOverrideUrlLoading(
+      navigationAction) {
     print("\n\nOverride ${navigationAction.request.url}\n\n");
     return NavigationActionPolicy.ALLOW;
   }

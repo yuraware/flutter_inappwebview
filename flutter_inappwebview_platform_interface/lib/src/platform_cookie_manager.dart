@@ -8,6 +8,7 @@ import 'types/main.dart';
 import 'web_uri.dart';
 import 'inappwebview_platform.dart';
 import 'in_app_webview/platform_headless_in_app_webview.dart';
+import 'webview_environment/platform_webview_environment.dart';
 
 /// Object specifying creation parameters for creating a [PlatformCookieManager].
 ///
@@ -16,7 +17,13 @@ import 'in_app_webview/platform_headless_in_app_webview.dart';
 @immutable
 class PlatformCookieManagerCreationParams {
   /// Used by the platform implementation to create a new [PlatformCookieManager].
-  const PlatformCookieManagerCreationParams();
+  const PlatformCookieManagerCreationParams({this.webViewEnvironment});
+
+  ///Used to create the [PlatformCookieManager] using the specified environment.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows
+  final PlatformWebViewEnvironment? webViewEnvironment;
 }
 
 ///{@template flutter_inappwebview_platform_interface.PlatformCookieManager}
@@ -33,6 +40,7 @@ class PlatformCookieManagerCreationParams {
 ///- iOS
 ///- MacOS
 ///- Web
+///- Windows
 ///{@endtemplate}
 abstract class PlatformCookieManager extends PlatformInterface {
   /// Creates a new [PlatformCookieManager]
@@ -69,8 +77,12 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///
   ///The default value of [path] is `"/"`.
   ///
+  ///On Windows, the [webViewController] could be used to access cookies accessible only on the WebView managed by that controller,
+  ///such as cookie with partition key.
+  ///
+  ///When you need to target iOS below 11, MacOS below 10.13 and Web platform,
   ///[webViewController] could be used if you need to set a session-only cookie using JavaScript (so [isHttpOnly] cannot be set, see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies)
-  ///on the current URL of the `WebView` managed by that controller when you need to target iOS below 11, MacOS below 10.13 and Web platform. In this case the [url] parameter is ignored.
+  ///on the current URL of the `WebView` managed by that controller. JavaScript must be enabled in order to work.
   ///
   ///The return value indicates whether the cookie was set successfully.
   ///Note that it will return always `true` for Web platform, iOS below 11.0 and MacOS below 10.13.
@@ -87,6 +99,7 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///- iOS ([Official API - WKHTTPCookieStore.setCookie](https://developer.apple.com/documentation/webkit/wkhttpcookiestore/2882007-setcookie))
   ///- MacOS ([Official API - WKHTTPCookieStore.setCookie](https://developer.apple.com/documentation/webkit/wkhttpcookiestore/2882007-setcookie))
   ///- Web
+  ///- Windows
   ///{@endtemplate}
   Future<bool> setCookie(
       {required WebUri url,
@@ -109,8 +122,12 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///{@template flutter_inappwebview_platform_interface.PlatformCookieManager.getCookies}
   ///Gets all the cookies for the given [url].
   ///
+  ///On Windows, the [webViewController] could be used to access cookies accessible only on the WebView managed by that controller,
+  ///such as cookie with partition key.
+  ///
+  ///When you need to target iOS below 11, MacOS below 10.13 and Web platform,
   ///[webViewController] is used for getting the cookies (also session-only cookies) using JavaScript (cookies with `isHttpOnly` enabled cannot be found, see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies)
-  ///from the current context of the `WebView` managed by that controller when you need to target iOS below 11, MacOS below 10.13 and Web platform. JavaScript must be enabled in order to work.
+  ///from the current context of the `WebView` managed by that controller. JavaScript must be enabled in order to work.
   ///In this case the [url] parameter is ignored.
   ///
   ///**NOTE for iOS below 11.0 and MacOS below 10.13**: All the cookies returned this way will have all the properties to `null` except for [Cookie.name] and [Cookie.value].
@@ -126,6 +143,7 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///- iOS ([Official API - WKHTTPCookieStore.getAllCookies](https://developer.apple.com/documentation/webkit/wkhttpcookiestore/2882005-getallcookies))
   ///- MacOS ([Official API - WKHTTPCookieStore.getAllCookies](https://developer.apple.com/documentation/webkit/wkhttpcookiestore/2882005-getallcookies))
   ///- Web
+  ///- Windows
   ///{@endtemplate}
   Future<List<Cookie>> getCookies(
       {required WebUri url,
@@ -139,8 +157,12 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///{@template flutter_inappwebview_platform_interface.PlatformCookieManager.getCookie}
   ///Gets a cookie by its [name] for the given [url].
   ///
+  ///On Windows, the [webViewController] could be used to access cookies accessible only on the WebView managed by that controller,
+  ///such as cookie with partition key.
+  ///
+  ///When you need to target iOS below 11, MacOS below 10.13 and Web platform,
   ///[webViewController] is used for getting the cookie (also session-only cookie) using JavaScript (cookie with `isHttpOnly` enabled cannot be found, see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies)
-  ///from the current context of the `WebView` managed by that controller when you need to target iOS below 11, MacOS below 10.13 and Web platform. JavaScript must be enabled in order to work.
+  ///from the current context of the `WebView` managed by that controller. JavaScript must be enabled in order to work.
   ///In this case the [url] parameter is ignored.
   ///
   ///**NOTE for iOS below 11.0 and MacOS below 10.13**: All the cookies returned this way will have all the properties to `null` except for [Cookie.name] and [Cookie.value].
@@ -156,6 +178,7 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///- iOS
   ///- MacOS
   ///- Web
+  ///- Windows
   ///{@endtemplate}
   Future<Cookie?> getCookie(
       {required WebUri url,
@@ -172,8 +195,12 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///
   ///The default value of [path] is `"/"`.
   ///
+  ///On Windows, the [webViewController] could be used to access cookies accessible only on the WebView managed by that controller,
+  ///such as cookie with partition key.
+  ///
+  ///When you need to target iOS below 11, MacOS below 10.13 and Web platform,
   ///[webViewController] is used for deleting the cookie (also session-only cookie) using JavaScript (cookie with `isHttpOnly` enabled cannot be deleted, see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies)
-  ///from the current context of the `WebView` managed by that controller when you need to target iOS below 11, MacOS below 10.13 and Web platform. JavaScript must be enabled in order to work.
+  ///from the current context of the `WebView` managed by that controller. JavaScript must be enabled in order to work.
   ///In this case the [url] parameter is ignored.
   ///
   ///The return value indicates whether the cookie was deleted successfully.
@@ -191,6 +218,7 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///- iOS ([Official API - WKHTTPCookieStore.delete](https://developer.apple.com/documentation/webkit/wkhttpcookiestore/2882009-delete)
   ///- MacOS ([Official API - WKHTTPCookieStore.delete](https://developer.apple.com/documentation/webkit/wkhttpcookiestore/2882009-delete)
   ///- Web
+  ///- Windows
   ///{@endtemplate}
   Future<bool> deleteCookie(
       {required WebUri url,
@@ -209,8 +237,12 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///
   ///The default value of [path] is `"/"`.
   ///
+  ///On Windows, the [webViewController] could be used to access cookies accessible only on the WebView managed by that controller,
+  ///such as cookie with partition key.
+  ///
+  ///When you need to target iOS below 11, MacOS below 10.13 and Web platform,
   ///[webViewController] is used for deleting the cookies (also session-only cookies) using JavaScript (cookies with `isHttpOnly` enabled cannot be deleted, see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies)
-  ///from the current context of the `WebView` managed by that controller when you need to target iOS below 11, MacOS below 10.13 and Web platform. JavaScript must be enabled in order to work.
+  ///from the current context of the `WebView` managed by that controller. JavaScript must be enabled in order to work.
   ///In this case the [url] parameter is ignored.
   ///
   ///The return value indicates whether cookies were deleted successfully.
@@ -228,6 +260,7 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///- iOS
   ///- MacOS
   ///- Web
+  ///- Windows
   ///{@endtemplate}
   Future<bool> deleteCookies(
       {required WebUri url,
@@ -254,6 +287,7 @@ abstract class PlatformCookieManager extends PlatformInterface {
   ///- Android native WebView ([Official API - CookieManager.removeAllCookies](https://developer.android.com/reference/android/webkit/CookieManager#removeAllCookies(android.webkit.ValueCallback%3Cjava.lang.Boolean%3E)))
   ///- iOS ([Official API - WKWebsiteDataStore.removeData](https://developer.apple.com/documentation/webkit/wkwebsitedatastore/1532938-removedata))
   ///- MacOS ([Official API - WKWebsiteDataStore.removeData](https://developer.apple.com/documentation/webkit/wkwebsitedatastore/1532938-removedata))
+  ///- Windows
   ///{@endtemplate}
   Future<bool> deleteAllCookies() {
     throw UnimplementedError(
@@ -287,5 +321,17 @@ abstract class PlatformCookieManager extends PlatformInterface {
   Future<bool> removeSessionCookies() {
     throw UnimplementedError(
         'removeSessionCookies is not implemented on the current platform');
+  }
+
+  ///{@template flutter_inappwebview_platform_interface.PlatformCookieManager.flush}
+  ///Ensures all cookies currently accessible through the getCookie API are written to persistent storage.
+  ///This call will block the caller until it is done and may perform I/O.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Android native WebView ([Official API - CookieManager.flush](https://developer.android.com/reference/android/webkit/CookieManager#flush()))
+  ///{@endtemplate}
+  Future<void> flush() {
+    throw UnimplementedError(
+        'flush is not implemented on the current platform');
   }
 }

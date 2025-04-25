@@ -1,3 +1,60 @@
+## 1.4.0-beta.2
+
+- Updated `flutter_inappwebview_internal_annotations` dependency from `^1.1.1` to `^1.2.0`
+- Updated `fromMap` static method and `toMap` method implementations
+- Updated all WebView events with return type `Future` to type `FutureOr` in order to not force the usage of `async` keyword
+- Added `byName`, `name`, `asNameMap` custom enum classes methods
+- Added `statusBarEnabled`, `browserAcceleratorKeysEnabled`, `generalAutofillEnabled`, `passwordAutosaveEnabled`, `isPinchZoomEnabled`, `hiddenPdfToolbarItems`, `reputationCheckingRequired`, `nonClientRegionSupportEnabled`, `alpha`, `isUserInteractionEnabled`, `handleAcceleratorKeyPressed` properties to `InAppWebViewSettings`
+- Added `isInterfaceSupported`, `getProcessInfos`, `getFailureReportFolderPath` methods to `PlatformWebViewEnvironment` class
+- Added `isInterfaceSupported`, `setInputMethodEnabled`, `hideInputMethod`, `showInputMethod` methods to `PlatformInAppWebViewController` class
+- Added `exclusiveUserDataFolderAccess`, `isCustomCrashReportingEnabled`, `enableTrackingPrevention`, `areBrowserExtensionsEnabled`, `channelSearchKind`, `releaseChannels`, `scrollbarStyle` properties to `WebViewEnvironmentSettings`
+- Added `onDownloadStarting` WebView event and deprecated `onDownloadStartRequest` event
+- Added `onNewBrowserVersionAvailable`, `onBrowserProcessExited`, `onProcessInfosChanged` events to `PlatformWebViewEnvironment` class
+- Added `onAcceleratorKeyPressed` WebView event
+- Fixed missing PrintJobOrientation android values
+
+## 1.4.0-beta.1
+
+- Updated static `fromMap` implementation for some classes
+- Updated `kJavaScriptHandlerForbiddenNames` list
+- Added `PlatformInAppLocalhostServer.onData` parameter to set a custom on data server callback
+- Added `javaScriptBridgeEnabled`, `javaScriptBridgeOriginAllowList`, `javaScriptBridgeForMainFrameOnly`, `pluginScriptsOriginAllowList`, `pluginScriptsForMainFrameOnly`, `javaScriptHandlersOriginAllowList`, `javaScriptHandlersForMainFrameOnly`, `scrollMultiplier` InAppWebViewSettings parameters
+- Added `setJavaScriptBridgeName`, `getJavaScriptBridgeName` static WebView controller methods
+- Added `onProcessFailed` WebView event
+- Added `regexToAllowSyncUrlLoading` Android-specific property to `InAppWebViewSettings`
+- Added `JavaScriptHandlerFunctionData` type
+- Deprecated `JavaScriptHandlerCallback` type in favor of `JavaScriptHandlerFunction` type
+- Deprecated `InAppWebViewSettings.forceDark` and `InAppWebViewSettings.forceDarkStrategy` Android-only properties in favor of `InAppWebViewSettings.algorithmicDarkeningAllowed`
+- Fixed X509Certificate PEM base64 decoding
+
+## 1.3.0+1
+
+- Fixed `X509Certificate.toMap` method
+
+## 1.3.0
+
+- Added `WebViewEnvironment.customSchemeRegistrations` parameter for Windows
+- Added `CustomSchemeRegistration` type
+- Updated docs
+
+## 1.2.0
+
+- Updated `Uint8List` conversion inside `fromMap` methods
+
+## 1.1.1
+
+- Updated permission models for Windows platform
+
+## 1.1.0+1
+
+- Updated docs and pubspec.yaml
+
+## 1.1.0
+
+- Added `PlatformWebViewEnvironment` class
+- Updates minimum supported SDK version to Flutter 3.24/Dart 3.5.
+- Removed unsupported feature `WebViewFeature.SUPPRESS_ERROR_PAGE`
+
 ## 1.0.10
 
 - Merged "Added == operator and hashCode to WebUri" [#1941](https://github.com/pichillilorenzo/flutter_inappwebview/pull/1941) (thanks to [daisukeueta](https://github.com/daisukeueta))

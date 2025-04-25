@@ -97,6 +97,7 @@ class WebResourceErrorType {
   ///**Officially Supported Platforms/Implementations**:
   ///- iOS ([Official API - URLError.badServerResponse](https://developer.apple.com/documentation/foundation/urlerror/2293606-badserverresponse))
   ///- MacOS ([Official API - URLError.badServerResponse](https://developer.apple.com/documentation/foundation/urlerror/2293606-badserverresponse))
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_ERROR_HTTP_INVALID_SERVER_RESPONSE](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
   static final BAD_SERVER_RESPONSE =
       WebResourceErrorType._internalMultiPlatform('BAD_SERVER_RESPONSE', () {
     switch (defaultTargetPlatform) {
@@ -104,6 +105,8 @@ class WebResourceErrorType {
         return -1011;
       case TargetPlatform.macOS:
         return -1011;
+      case TargetPlatform.windows:
+        return 8;
       default:
         break;
     }
@@ -154,6 +157,7 @@ class WebResourceErrorType {
   ///**Officially Supported Platforms/Implementations**:
   ///- iOS ([Official API - URLError.cancelled](https://developer.apple.com/documentation/foundation/urlerror/code/2883178-cancelled))
   ///- MacOS ([Official API - URLError.cancelled](https://developer.apple.com/documentation/foundation/urlerror/code/2883178-cancelled))
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_OPERATION_CANCELED](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
   static final CANCELLED =
       WebResourceErrorType._internalMultiPlatform('CANCELLED', () {
     switch (defaultTargetPlatform) {
@@ -161,6 +165,8 @@ class WebResourceErrorType {
         return -999;
       case TargetPlatform.macOS:
         return -999;
+      case TargetPlatform.windows:
+        return 14;
       default:
         break;
     }
@@ -191,6 +197,7 @@ class WebResourceErrorType {
   ///- Android native WebView ([Official API - WebViewClient.ERROR_CONNECT](https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_CONNECT))
   ///- iOS ([Official API - URLError.cannotConnectToHost](https://developer.apple.com/documentation/foundation/urlerror/code/2883001-cannotconnecttohost))
   ///- MacOS ([Official API - URLError.cannotConnectToHost](https://developer.apple.com/documentation/foundation/urlerror/code/2883001-cannotconnecttohost))
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_CANNOT_CONNECT](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
   static final CANNOT_CONNECT_TO_HOST =
       WebResourceErrorType._internalMultiPlatform('CANNOT_CONNECT_TO_HOST', () {
     switch (defaultTargetPlatform) {
@@ -200,6 +207,8 @@ class WebResourceErrorType {
         return -1004;
       case TargetPlatform.macOS:
         return -1004;
+      case TargetPlatform.windows:
+        return 12;
       default:
         break;
     }
@@ -408,6 +417,21 @@ class WebResourceErrorType {
     return null;
   });
 
+  ///Indicates that the connection was stopped.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_CONNECTION_ABORTED](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
+  static final CONNECTION_ABORTED =
+      WebResourceErrorType._internalMultiPlatform('CONNECTION_ABORTED', () {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.windows:
+        return 9;
+      default:
+        break;
+    }
+    return null;
+  });
+
   ///The length of the resource data exceeds the maximum allowed.
   ///
   ///**Officially Supported Platforms/Implementations**:
@@ -558,6 +582,7 @@ class WebResourceErrorType {
   ///- Android native WebView ([Official API - WebViewClient.ERROR_HOST_LOOKUP](https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_HOST_LOOKUP))
   ///- iOS ([Official API - URLError.cannotFindHost](https://developer.apple.com/documentation/foundation/urlerror/code/2883157-cannotfindhost))
   ///- MacOS ([Official API - URLError.cannotFindHost](https://developer.apple.com/documentation/foundation/urlerror/code/2883157-cannotfindhost))
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_HOST_NAME_NOT_RESOLVED](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
   static final HOST_LOOKUP =
       WebResourceErrorType._internalMultiPlatform('HOST_LOOKUP', () {
     switch (defaultTargetPlatform) {
@@ -567,6 +592,8 @@ class WebResourceErrorType {
         return -1003;
       case TargetPlatform.macOS:
         return -1003;
+      case TargetPlatform.windows:
+        return 13;
       default:
         break;
     }
@@ -611,6 +638,7 @@ class WebResourceErrorType {
   ///**Officially Supported Platforms/Implementations**:
   ///- iOS ([Official API - URLError.networkConnectionLost](https://developer.apple.com/documentation/foundation/urlerror/2293759-networkconnectionlost))
   ///- MacOS ([Official API - URLError.networkConnectionLost](https://developer.apple.com/documentation/foundation/urlerror/2293759-networkconnectionlost))
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_DISCONNECTED](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
   static final NETWORK_CONNECTION_LOST =
       WebResourceErrorType._internalMultiPlatform('NETWORK_CONNECTION_LOST',
           () {
@@ -619,6 +647,8 @@ class WebResourceErrorType {
         return -1005;
       case TargetPlatform.macOS:
         return -1005;
+      case TargetPlatform.windows:
+        return 11;
       default:
         break;
     }
@@ -678,6 +708,21 @@ class WebResourceErrorType {
     return null;
   });
 
+  ///Indicates that the request redirect failed.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_REDIRECT_FAILED](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
+  static final REDIRECT_FAILED =
+      WebResourceErrorType._internalMultiPlatform('REDIRECT_FAILED', () {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.windows:
+        return 15;
+      default:
+        break;
+    }
+    return null;
+  });
+
   ///A redirect was specified by way of server response code, but the server didn’t accompany this code with a redirect URL.
   ///
   ///**Officially Supported Platforms/Implementations**:
@@ -710,6 +755,20 @@ class WebResourceErrorType {
         return -1021;
       case TargetPlatform.macOS:
         return -1021;
+      default:
+        break;
+    }
+    return null;
+  });
+
+  ///Indicates that the connection was reset.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_CONNECTION_RESET](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
+  static final RESET = WebResourceErrorType._internalMultiPlatform('RESET', () {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.windows:
+        return 10;
       default:
         break;
     }
@@ -830,12 +889,28 @@ class WebResourceErrorType {
     return null;
   });
 
+  ///Indicates that the host is unreachable.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_SERVER_UNREACHABLE](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
+  static final SERVER_UNREACHABLE =
+      WebResourceErrorType._internalMultiPlatform('SERVER_UNREACHABLE', () {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.windows:
+        return 6;
+      default:
+        break;
+    }
+    return null;
+  });
+
   ///Connection timed out.
   ///
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView ([Official API - WebViewClient.ERROR_TIMEOUT](https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_TIMEOUT))
   ///- iOS ([Official API - URLError.timedOut](https://developer.apple.com/documentation/foundation/urlerror/code/2883027-timedout))
   ///- MacOS ([Official API - URLError.timedOut](https://developer.apple.com/documentation/foundation/urlerror/code/2883027-timedout))
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_TIMEOUT](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
   static final TIMEOUT =
       WebResourceErrorType._internalMultiPlatform('TIMEOUT', () {
     switch (defaultTargetPlatform) {
@@ -845,6 +920,8 @@ class WebResourceErrorType {
         return -1001;
       case TargetPlatform.macOS:
         return -1001;
+      case TargetPlatform.windows:
+        return 7;
       default:
         break;
     }
@@ -887,12 +964,28 @@ class WebResourceErrorType {
     return null;
   });
 
+  ///Indicates that an unexpected error occurred.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_UNEXPECTED_ERROR](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
+  static final UNEXPECTED_ERROR =
+      WebResourceErrorType._internalMultiPlatform('UNEXPECTED_ERROR', () {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.windows:
+        return 16;
+      default:
+        break;
+    }
+    return null;
+  });
+
   ///The URL Loading System encountered an error that it can’t interpret.
   ///
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView ([Official API - WebViewClient.ERROR_UNKNOWN](https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_UNKNOWN))
   ///- iOS ([Official API - URLError.unknown](https://developer.apple.com/documentation/foundation/urlerror/2293357-unknown))
   ///- MacOS ([Official API - URLError.unknown](https://developer.apple.com/documentation/foundation/urlerror/2293357-unknown))
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_UNKNOWN](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
   static final UNKNOWN =
       WebResourceErrorType._internalMultiPlatform('UNKNOWN', () {
     switch (defaultTargetPlatform) {
@@ -902,6 +995,8 @@ class WebResourceErrorType {
         return -1;
       case TargetPlatform.macOS:
         return -1;
+      case TargetPlatform.windows:
+        return 0;
       default:
         break;
     }
@@ -982,6 +1077,7 @@ class WebResourceErrorType {
   ///**Officially Supported Platforms/Implementations**:
   ///- iOS ([Official API - URLError.userAuthenticationRequired](https://developer.apple.com/documentation/foundation/urlerror/2293560-userauthenticationrequired))
   ///- MacOS ([Official API - URLError.userAuthenticationRequired](https://developer.apple.com/documentation/foundation/urlerror/2293560-userauthenticationrequired))
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_VALID_AUTHENTICATION_CREDENTIALS_REQUIRED](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
   static final USER_AUTHENTICATION_REQUIRED =
       WebResourceErrorType._internalMultiPlatform(
           'USER_AUTHENTICATION_REQUIRED', () {
@@ -990,6 +1086,8 @@ class WebResourceErrorType {
         return -1013;
       case TargetPlatform.macOS:
         return -1013;
+      case TargetPlatform.windows:
+        return 17;
       default:
         break;
     }
@@ -1010,6 +1108,22 @@ class WebResourceErrorType {
         return -1012;
       case TargetPlatform.macOS:
         return -1012;
+      default:
+        break;
+    }
+    return null;
+  });
+
+  ///Indicates that user lacks proper authentication credentials for a proxy server.
+  ///
+  ///**Officially Supported Platforms/Implementations**:
+  ///- Windows ([Official API - COREWEBVIEW2_WEB_ERROR_STATUS_VALID_PROXY_AUTHENTICATION_REQUIRED](https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/webview2-idl?view=webview2-1.0.2210.55#corewebview2_web_error_status))
+  static final VALID_PROXY_AUTHENTICATION_REQUIRED =
+      WebResourceErrorType._internalMultiPlatform(
+          'VALID_PROXY_AUTHENTICATION_REQUIRED', () {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.windows:
+        return 18;
       default:
         break;
     }
@@ -1057,6 +1171,7 @@ class WebResourceErrorType {
     WebResourceErrorType.CANNOT_WRITE_TO_FILE,
     WebResourceErrorType.CLIENT_CERTIFICATE_REJECTED,
     WebResourceErrorType.CLIENT_CERTIFICATE_REQUIRED,
+    WebResourceErrorType.CONNECTION_ABORTED,
     WebResourceErrorType.DATA_LENGTH_EXCEEDS_MAXIMUM,
     WebResourceErrorType.DATA_NOT_ALLOWED,
     WebResourceErrorType.DOWNLOAD_DECODING_FAILED_MID_STREAM,
@@ -1072,17 +1187,21 @@ class WebResourceErrorType {
     WebResourceErrorType.NOT_CONNECTED_TO_INTERNET,
     WebResourceErrorType.NO_PERMISSIONS_TO_READ_FILE,
     WebResourceErrorType.PROXY_AUTHENTICATION,
+    WebResourceErrorType.REDIRECT_FAILED,
     WebResourceErrorType.REDIRECT_TO_NON_EXISTENT_LOCATION,
     WebResourceErrorType.REQUEST_BODY_STREAM_EXHAUSTED,
+    WebResourceErrorType.RESET,
     WebResourceErrorType.RESOURCE_UNAVAILABLE,
     WebResourceErrorType.SECURE_CONNECTION_FAILED,
     WebResourceErrorType.SERVER_CERTIFICATE_HAS_BAD_DATE,
     WebResourceErrorType.SERVER_CERTIFICATE_HAS_UNKNOWN_ROOT,
     WebResourceErrorType.SERVER_CERTIFICATE_NOT_YET_VALID,
     WebResourceErrorType.SERVER_CERTIFICATE_UNTRUSTED,
+    WebResourceErrorType.SERVER_UNREACHABLE,
     WebResourceErrorType.TIMEOUT,
     WebResourceErrorType.TOO_MANY_REDIRECTS,
     WebResourceErrorType.TOO_MANY_REQUESTS,
+    WebResourceErrorType.UNEXPECTED_ERROR,
     WebResourceErrorType.UNKNOWN,
     WebResourceErrorType.UNSAFE_RESOURCE,
     WebResourceErrorType.UNSUPPORTED_AUTH_SCHEME,
@@ -1090,6 +1209,7 @@ class WebResourceErrorType {
     WebResourceErrorType.USER_AUTHENTICATION_FAILED,
     WebResourceErrorType.USER_AUTHENTICATION_REQUIRED,
     WebResourceErrorType.USER_CANCELLED_AUTHENTICATION,
+    WebResourceErrorType.VALID_PROXY_AUTHENTICATION_REQUIRED,
     WebResourceErrorType.ZERO_BYTE_RESOURCE,
   ].toSet();
 
@@ -1119,11 +1239,170 @@ class WebResourceErrorType {
     return null;
   }
 
+  /// Gets a possible [WebResourceErrorType] instance value with name [name].
+  ///
+  /// Goes through [WebResourceErrorType.values] looking for a value with
+  /// name [name], as reported by [WebResourceErrorType.name].
+  /// Returns the first value with the given name, otherwise `null`.
+  static WebResourceErrorType? byName(String? name) {
+    if (name != null) {
+      try {
+        return WebResourceErrorType.values
+            .firstWhere((element) => element.name() == name);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  /// Creates a map from the names of [WebResourceErrorType] values to the values.
+  ///
+  /// The collection that this method is called on is expected to have
+  /// values with distinct names, like the `values` list of an enum class.
+  /// Only one value for each name can occur in the created map,
+  /// so if two or more values have the same name (either being the
+  /// same value, or being values of different enum type), at most one of
+  /// them will be represented in the returned map.
+  static Map<String, WebResourceErrorType> asNameMap() =>
+      <String, WebResourceErrorType>{
+        for (final value in WebResourceErrorType.values) value.name(): value
+      };
+
   ///Gets [String] value.
   String toValue() => _value;
 
   ///Gets [int?] native value.
   int? toNativeValue() => _nativeValue;
+
+  ///Gets the name of the value.
+  String name() {
+    switch (_value) {
+      case 'APP_TRANSPORT_SECURITY_REQUIRES_SECURE_CONNECTION':
+        return 'APP_TRANSPORT_SECURITY_REQUIRES_SECURE_CONNECTION';
+      case 'BACKGROUND_SESSION_IN_USE_BY_ANOTHER_PROCESS':
+        return 'BACKGROUND_SESSION_IN_USE_BY_ANOTHER_PROCESS';
+      case 'BACKGROUND_SESSION_REQUIRES_SHARED_CONTAINER':
+        return 'BACKGROUND_SESSION_REQUIRES_SHARED_CONTAINER';
+      case 'BACKGROUND_SESSION_WAS_DISCONNECTED':
+        return 'BACKGROUND_SESSION_WAS_DISCONNECTED';
+      case 'BAD_SERVER_RESPONSE':
+        return 'BAD_SERVER_RESPONSE';
+      case 'BAD_URL':
+        return 'BAD_URL';
+      case 'CALL_IS_ACTIVE':
+        return 'CALL_IS_ACTIVE';
+      case 'CANCELLED':
+        return 'CANCELLED';
+      case 'CANNOT_CLOSE_FILE':
+        return 'CANNOT_CLOSE_FILE';
+      case 'CANNOT_CONNECT_TO_HOST':
+        return 'CANNOT_CONNECT_TO_HOST';
+      case 'CANNOT_CREATE_FILE':
+        return 'CANNOT_CREATE_FILE';
+      case 'CANNOT_DECODE_CONTENT_DATA':
+        return 'CANNOT_DECODE_CONTENT_DATA';
+      case 'CANNOT_DECODE_RAW_DATA':
+        return 'CANNOT_DECODE_RAW_DATA';
+      case 'CANNOT_LOAD_FROM_NETWORK':
+        return 'CANNOT_LOAD_FROM_NETWORK';
+      case 'CANNOT_MOVE_FILE':
+        return 'CANNOT_MOVE_FILE';
+      case 'CANNOT_OPEN_FILE':
+        return 'CANNOT_OPEN_FILE';
+      case 'CANNOT_PARSE_RESPONSE':
+        return 'CANNOT_PARSE_RESPONSE';
+      case 'CANNOT_REMOVE_FILE':
+        return 'CANNOT_REMOVE_FILE';
+      case 'CANNOT_WRITE_TO_FILE':
+        return 'CANNOT_WRITE_TO_FILE';
+      case 'CLIENT_CERTIFICATE_REJECTED':
+        return 'CLIENT_CERTIFICATE_REJECTED';
+      case 'CLIENT_CERTIFICATE_REQUIRED':
+        return 'CLIENT_CERTIFICATE_REQUIRED';
+      case 'CONNECTION_ABORTED':
+        return 'CONNECTION_ABORTED';
+      case 'DATA_LENGTH_EXCEEDS_MAXIMUM':
+        return 'DATA_LENGTH_EXCEEDS_MAXIMUM';
+      case 'DATA_NOT_ALLOWED':
+        return 'DATA_NOT_ALLOWED';
+      case 'DOWNLOAD_DECODING_FAILED_MID_STREAM':
+        return 'DOWNLOAD_DECODING_FAILED_MID_STREAM';
+      case 'DOWNLOAD_DECODING_FAILED_TO_COMPLETE':
+        return 'DOWNLOAD_DECODING_FAILED_TO_COMPLETE';
+      case 'FAILED_SSL_HANDSHAKE':
+        return 'FAILED_SSL_HANDSHAKE';
+      case 'FILE_IS_DIRECTORY':
+        return 'FILE_IS_DIRECTORY';
+      case 'FILE_NOT_FOUND':
+        return 'FILE_NOT_FOUND';
+      case 'GENERIC_FILE_ERROR':
+        return 'GENERIC_FILE_ERROR';
+      case 'HOST_LOOKUP':
+        return 'HOST_LOOKUP';
+      case 'INTERNATIONAL_ROAMING_OFF':
+        return 'INTERNATIONAL_ROAMING_OFF';
+      case 'IO':
+        return 'IO';
+      case 'NETWORK_CONNECTION_LOST':
+        return 'NETWORK_CONNECTION_LOST';
+      case 'NOT_CONNECTED_TO_INTERNET':
+        return 'NOT_CONNECTED_TO_INTERNET';
+      case 'NO_PERMISSIONS_TO_READ_FILE':
+        return 'NO_PERMISSIONS_TO_READ_FILE';
+      case 'PROXY_AUTHENTICATION':
+        return 'PROXY_AUTHENTICATION';
+      case 'REDIRECT_FAILED':
+        return 'REDIRECT_FAILED';
+      case 'REDIRECT_TO_NON_EXISTENT_LOCATION':
+        return 'REDIRECT_TO_NON_EXISTENT_LOCATION';
+      case 'REQUEST_BODY_STREAM_EXHAUSTED':
+        return 'REQUEST_BODY_STREAM_EXHAUSTED';
+      case 'RESET':
+        return 'RESET';
+      case 'RESOURCE_UNAVAILABLE':
+        return 'RESOURCE_UNAVAILABLE';
+      case 'SECURE_CONNECTION_FAILED':
+        return 'SECURE_CONNECTION_FAILED';
+      case 'SERVER_CERTIFICATE_HAS_BAD_DATE':
+        return 'SERVER_CERTIFICATE_HAS_BAD_DATE';
+      case 'SERVER_CERTIFICATE_HAS_UNKNOWN_ROOT':
+        return 'SERVER_CERTIFICATE_HAS_UNKNOWN_ROOT';
+      case 'SERVER_CERTIFICATE_NOT_YET_VALID':
+        return 'SERVER_CERTIFICATE_NOT_YET_VALID';
+      case 'SERVER_CERTIFICATE_UNTRUSTED':
+        return 'SERVER_CERTIFICATE_UNTRUSTED';
+      case 'SERVER_UNREACHABLE':
+        return 'SERVER_UNREACHABLE';
+      case 'TIMEOUT':
+        return 'TIMEOUT';
+      case 'TOO_MANY_REDIRECTS':
+        return 'TOO_MANY_REDIRECTS';
+      case 'TOO_MANY_REQUESTS':
+        return 'TOO_MANY_REQUESTS';
+      case 'UNEXPECTED_ERROR':
+        return 'UNEXPECTED_ERROR';
+      case 'UNKNOWN':
+        return 'UNKNOWN';
+      case 'UNSAFE_RESOURCE':
+        return 'UNSAFE_RESOURCE';
+      case 'UNSUPPORTED_AUTH_SCHEME':
+        return 'UNSUPPORTED_AUTH_SCHEME';
+      case 'UNSUPPORTED_SCHEME':
+        return 'UNSUPPORTED_SCHEME';
+      case 'USER_AUTHENTICATION_FAILED':
+        return 'USER_AUTHENTICATION_FAILED';
+      case 'USER_AUTHENTICATION_REQUIRED':
+        return 'USER_AUTHENTICATION_REQUIRED';
+      case 'USER_CANCELLED_AUTHENTICATION':
+        return 'USER_CANCELLED_AUTHENTICATION';
+      case 'VALID_PROXY_AUTHENTICATION_REQUIRED':
+        return 'VALID_PROXY_AUTHENTICATION_REQUIRED';
+      case 'ZERO_BYTE_RESOURCE':
+        return 'ZERO_BYTE_RESOURCE';
+    }
+    return _value.toString();
+  }
 
   @override
   int get hashCode => _value.hashCode;

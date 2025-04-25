@@ -6,6 +6,7 @@ import 'url_request.dart';
 import 'frame_info.dart';
 import 'navigation_type.dart';
 import '../in_app_webview/platform_webview.dart';
+import 'enum_method.dart';
 
 part 'create_window_action.g.dart';
 
@@ -36,7 +37,11 @@ class CreateWindowAction_ extends NavigationAction_ {
     MacOSPlatform(
         apiName: "WKWindowFeatures",
         apiUrl:
-            "https://developer.apple.com/documentation/webkit/wkwindowfeatures")
+            "https://developer.apple.com/documentation/webkit/wkwindowfeatures"),
+    WindowsPlatform(
+        apiName: "ICoreWebView2WindowFeatures",
+        apiUrl:
+            "https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2windowfeatures?view=webview2-1.0.2210.55")
   ])
   WindowFeatures_? windowFeatures;
 

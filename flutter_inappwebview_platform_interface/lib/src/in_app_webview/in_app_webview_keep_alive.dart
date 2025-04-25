@@ -22,18 +22,20 @@ extension InternalInAppWebViewKeepAlive on InAppWebViewKeepAlive {
 ///Used internally to save and restore [PlatformInAppWebViewController] properties
 ///for the keep alive feature.
 class InAppWebViewControllerKeepAliveProps {
-  Map<String, JavaScriptHandlerCallback> javaScriptHandlersMap;
+  Map<String, Function> javaScriptHandlersMap;
   Map<UserScriptInjectionTime, List<UserScript>> userScripts;
   Set<String> webMessageListenerObjNames;
   Map<String, ScriptHtmlTagAttributes> injectedScriptsFromURL;
   Set<PlatformWebMessageChannel> webMessageChannels = Set();
   Set<PlatformWebMessageListener> webMessageListeners = Set();
+  Map<String, Function(dynamic data)> devToolsProtocolEventListenerMap;
 
   InAppWebViewControllerKeepAliveProps(
-      {required this.javaScriptHandlersMap,
-      required this.userScripts,
-      required this.webMessageListenerObjNames,
-      required this.injectedScriptsFromURL,
-      required this.webMessageChannels,
-      required this.webMessageListeners});
+      {this.javaScriptHandlersMap = const {},
+      this.userScripts = const {},
+      this.webMessageListenerObjNames = const {},
+      this.injectedScriptsFromURL = const {},
+      this.webMessageChannels = const {},
+      this.webMessageListeners = const {},
+      this.devToolsProtocolEventListenerMap = const {}});
 }

@@ -41,7 +41,8 @@ class InAppWebViewInitialData {
   }
 
   ///Gets a possible [InAppWebViewInitialData] instance from a [Map] value.
-  static InAppWebViewInitialData? fromMap(Map<String, dynamic>? map) {
+  static InAppWebViewInitialData? fromMap(Map<String, dynamic>? map,
+      {EnumMethod? enumMethod}) {
     if (map == null) {
       return null;
     }
@@ -52,13 +53,17 @@ class InAppWebViewInitialData {
       data: map['data'],
       historyUrl: map['historyUrl'] != null ? WebUri(map['historyUrl']) : null,
     );
-    instance.encoding = map['encoding'];
-    instance.mimeType = map['mimeType'];
+    if (map['encoding'] != null) {
+      instance.encoding = map['encoding'];
+    }
+    if (map['mimeType'] != null) {
+      instance.mimeType = map['mimeType'];
+    }
     return instance;
   }
 
   ///Converts instance to a map.
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({EnumMethod? enumMethod}) {
     return {
       "baseUrl": baseUrl?.toString(),
       "data": data,

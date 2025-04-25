@@ -68,7 +68,8 @@ class ProxySettings {
       this.reverseBypassEnabled = false});
 
   ///Gets a possible [ProxySettings] instance from a [Map] value.
-  static ProxySettings? fromMap(Map<String, dynamic>? map) {
+  static ProxySettings? fromMap(Map<String, dynamic>? map,
+      {EnumMethod? enumMethod}) {
     if (map == null) {
       return null;
     }
@@ -76,22 +77,32 @@ class ProxySettings {
       bypassSimpleHostnames: map['bypassSimpleHostnames'],
       removeImplicitRules: map['removeImplicitRules'],
     );
-    instance.bypassRules =
-        List<String>.from(map['bypassRules']!.cast<String>());
-    instance.directs = List<String>.from(map['directs']!.cast<String>());
-    instance.proxyRules = List<ProxyRule>.from(map['proxyRules']
-        .map((e) => ProxyRule.fromMap(e?.cast<String, dynamic>())!));
-    instance.reverseBypassEnabled = map['reverseBypassEnabled'];
+    if (map['bypassRules'] != null) {
+      instance.bypassRules =
+          List<String>.from(map['bypassRules']!.cast<String>());
+    }
+    if (map['directs'] != null) {
+      instance.directs = List<String>.from(map['directs']!.cast<String>());
+    }
+    if (map['proxyRules'] != null) {
+      instance.proxyRules = List<ProxyRule>.from(map['proxyRules'].map((e) =>
+          ProxyRule.fromMap(e?.cast<String, dynamic>(),
+              enumMethod: enumMethod)!));
+    }
+    if (map['reverseBypassEnabled'] != null) {
+      instance.reverseBypassEnabled = map['reverseBypassEnabled'];
+    }
     return instance;
   }
 
   ///Converts instance to a map.
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({EnumMethod? enumMethod}) {
     return {
       "bypassRules": bypassRules,
       "bypassSimpleHostnames": bypassSimpleHostnames,
       "directs": directs,
-      "proxyRules": proxyRules.map((e) => e.toMap()).toList(),
+      "proxyRules":
+          proxyRules.map((e) => e.toMap(enumMethod: enumMethod)).toList(),
       "removeImplicitRules": removeImplicitRules,
       "reverseBypassEnabled": reverseBypassEnabled,
     };

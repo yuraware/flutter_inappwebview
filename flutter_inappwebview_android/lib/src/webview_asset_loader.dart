@@ -25,7 +25,7 @@ class AndroidPathHandlerCreationParams
 }
 
 ///{@macro flutter_inappwebview_platform_interface.PlatformPathHandler}
-abstract class AndroidPathHandler
+abstract mixin class AndroidPathHandler
     implements ChannelController, PlatformPathHandler {
   final String _id = IdGenerator.generate();
 
@@ -54,7 +54,7 @@ abstract class AndroidPathHandler
   }
 
   @override
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({EnumMethod? enumMethod}) {
     return {"path": path, "type": type, "id": _id};
   }
 
@@ -194,7 +194,7 @@ class AndroidInternalStoragePathHandler
   String get directory => _internalParams.directory;
 
   @override
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({EnumMethod? enumMethod}) {
     return {...toMap(), 'directory': directory};
   }
 }

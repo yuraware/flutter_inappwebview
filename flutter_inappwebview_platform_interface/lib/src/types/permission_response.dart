@@ -1,7 +1,9 @@
 import 'package:flutter_inappwebview_internal_annotations/flutter_inappwebview_internal_annotations.dart';
+
 import '../in_app_webview/platform_webview.dart';
 import 'permission_resource_type.dart';
 import 'permission_response_action.dart';
+import 'enum_method.dart';
 
 part 'permission_response.g.dart';
 
@@ -10,7 +12,7 @@ part 'permission_response.g.dart';
 class PermissionResponse_ {
   ///Resources granted to be accessed by origin.
   ///
-  ///**NOTE for iOS**: not used. The [action] taken is based on the [PermissionRequest.resources].
+  ///**NOTE for iOS, macOS and Windows**: not used. The [action] taken is based on the [PermissionRequest.resources].
   List<PermissionResourceType_> resources;
 
   ///Indicate the [PermissionResponseAction] to take in response of a permission request.

@@ -42,12 +42,15 @@ class WebResourceResponse {
       this.statusCode});
 
   ///Gets a possible [WebResourceResponse] instance from a [Map] value.
-  static WebResourceResponse? fromMap(Map<String, dynamic>? map) {
+  static WebResourceResponse? fromMap(Map<String, dynamic>? map,
+      {EnumMethod? enumMethod}) {
     if (map == null) {
       return null;
     }
     final instance = WebResourceResponse(
-      data: map['data'],
+      data: map['data'] != null
+          ? Uint8List.fromList(map['data'].cast<int>())
+          : null,
       headers: map['headers']?.cast<String, String>(),
       reasonPhrase: map['reasonPhrase'],
       statusCode: map['statusCode'],
@@ -58,7 +61,7 @@ class WebResourceResponse {
   }
 
   ///Converts instance to a map.
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({EnumMethod? enumMethod}) {
     return {
       "contentEncoding": contentEncoding,
       "contentType": contentType,

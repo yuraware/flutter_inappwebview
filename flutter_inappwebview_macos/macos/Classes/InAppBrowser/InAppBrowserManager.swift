@@ -19,7 +19,7 @@ public class InAppBrowserManager: ChannelDelegate {
     var plugin: InAppWebViewFlutterPlugin?
     
     init(plugin: InAppWebViewFlutterPlugin) {
-        super.init(channel: FlutterMethodChannel(name: InAppBrowserManager.METHOD_CHANNEL_NAME, binaryMessenger: plugin.registrar!.messenger))
+        super.init(channel: FlutterMethodChannel(name: InAppBrowserManager.METHOD_CHANNEL_NAME, binaryMessenger: plugin.registrar.messenger))
         self.plugin = plugin
     }
     
@@ -92,10 +92,13 @@ public class InAppBrowserManager: ChannelDelegate {
             window.windowController?.showWindow(self)
         }
         
+        window.makeKeyAndOrderFront(self)
         if browserSettings.hidden {
+            // https://github.com/pichillilorenzo/flutter_inappwebview/issues/1939
+            // without calling first window.makeKeyAndOrderFront(self)
+            // window.hide() would deallocate and dispose the InAppBrowserWindow
             window.hide()
-        } else {
-            window.makeKeyAndOrderFront(self)
+            NSApplication.shared.mainWindow?.makeKeyAndOrderFront(self)
         }
     }
     

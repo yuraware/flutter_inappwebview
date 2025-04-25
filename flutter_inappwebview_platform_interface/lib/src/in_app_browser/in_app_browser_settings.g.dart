@@ -40,6 +40,7 @@ class InAppBrowserSettings
   ///- Android native WebView
   ///- iOS
   ///- MacOS
+  ///- Windows
   bool? hidden;
 
   ///Set to `true` to hide the close button. The default value is `false`.
@@ -53,6 +54,7 @@ class InAppBrowserSettings
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView
   ///- iOS
+  ///- MacOS
   bool? hideDefaultMenuItems;
 
   ///Set to `true` to hide the progress bar when the WebView is loading a page. The default value is `false`.
@@ -146,6 +148,7 @@ class InAppBrowserSettings
   ///**Officially Supported Platforms/Implementations**:
   ///- Android native WebView
   ///- MacOS
+  ///- Windows
   String? toolbarTopFixedTitle;
 
   ///Set the tint color to apply to the navigation items and bar button items.
@@ -171,6 +174,7 @@ class InAppBrowserSettings
   ///
   ///**Officially Supported Platforms/Implementations**:
   ///- MacOS
+  ///- Windows
   double? windowAlphaValue;
 
   ///Sets the origin and size of the window’s frame rectangle according to a given frame rectangle,
@@ -178,6 +182,7 @@ class InAppBrowserSettings
   ///
   ///**Officially Supported Platforms/Implementations**:
   ///- MacOS
+  ///- Windows
   InAppWebViewRect? windowFrame;
 
   ///Flags that describe the window’s current style, such as if it’s resizable or in full-screen mode.
@@ -188,10 +193,8 @@ class InAppBrowserSettings
 
   ///The type of separator that the app displays between the title bar and content of a window.
   ///
-  ///**NOTE for MacOS**: available on MacOS 11.0+.
-  ///
   ///**Officially Supported Platforms/Implementations**:
-  ///- MacOS
+  ///- MacOS 11.0+
   WindowTitlebarSeparatorStyle? windowTitlebarSeparatorStyle;
 
   ///How the browser window should be added to the main window.
@@ -199,6 +202,7 @@ class InAppBrowserSettings
   ///
   ///**Officially Supported Platforms/Implementations**:
   ///- MacOS
+  ///- Windows
   WindowType? windowType;
   InAppBrowserSettings(
       {this.allowGoBackWithBackButton = true,
@@ -231,7 +235,8 @@ class InAppBrowserSettings
       this.windowType});
 
   ///Gets a possible [InAppBrowserSettings] instance from a [Map] value.
-  static InAppBrowserSettings? fromMap(Map<String, dynamic>? map) {
+  static InAppBrowserSettings? fromMap(Map<String, dynamic>? map,
+      {EnumMethod? enumMethod}) {
     if (map == null) {
       return null;
     }
@@ -257,13 +262,29 @@ class InAppBrowserSettings
       toolbarTopTintColor: map['toolbarTopTintColor'] != null
           ? UtilColor.fromStringRepresentation(map['toolbarTopTintColor'])
           : null,
-      windowFrame:
-          InAppWebViewRect.fromMap(map['windowFrame']?.cast<String, dynamic>()),
-      windowStyleMask: WindowStyleMask.fromNativeValue(map['windowStyleMask']),
-      windowTitlebarSeparatorStyle:
-          WindowTitlebarSeparatorStyle.fromNativeValue(
-              map['windowTitlebarSeparatorStyle']),
-      windowType: WindowType.fromNativeValue(map['windowType']),
+      windowFrame: InAppWebViewRect.fromMap(
+          map['windowFrame']?.cast<String, dynamic>(),
+          enumMethod: enumMethod),
+      windowStyleMask: switch (enumMethod ?? EnumMethod.nativeValue) {
+        EnumMethod.nativeValue =>
+          WindowStyleMask.fromNativeValue(map['windowStyleMask']),
+        EnumMethod.value => WindowStyleMask.fromValue(map['windowStyleMask']),
+        EnumMethod.name => WindowStyleMask.byName(map['windowStyleMask'])
+      },
+      windowTitlebarSeparatorStyle: switch (
+          enumMethod ?? EnumMethod.nativeValue) {
+        EnumMethod.nativeValue => WindowTitlebarSeparatorStyle.fromNativeValue(
+            map['windowTitlebarSeparatorStyle']),
+        EnumMethod.value => WindowTitlebarSeparatorStyle.fromValue(
+            map['windowTitlebarSeparatorStyle']),
+        EnumMethod.name => WindowTitlebarSeparatorStyle.byName(
+            map['windowTitlebarSeparatorStyle'])
+      },
+      windowType: switch (enumMethod ?? EnumMethod.nativeValue) {
+        EnumMethod.nativeValue => WindowType.fromNativeValue(map['windowType']),
+        EnumMethod.value => WindowType.fromValue(map['windowType']),
+        EnumMethod.name => WindowType.byName(map['windowType'])
+      },
     );
     instance.allowGoBackWithBackButton = map['allowGoBackWithBackButton'];
     instance.closeOnCannotGoBack = map['closeOnCannotGoBack'];
@@ -275,8 +296,13 @@ class InAppBrowserSettings
     instance.hideToolbarBottom = map['hideToolbarBottom'];
     instance.hideToolbarTop = map['hideToolbarTop'];
     instance.hideUrlBar = map['hideUrlBar'];
-    instance.presentationStyle =
-        ModalPresentationStyle.fromNativeValue(map['presentationStyle']);
+    instance.presentationStyle = switch (enumMethod ?? EnumMethod.nativeValue) {
+      EnumMethod.nativeValue =>
+        ModalPresentationStyle.fromNativeValue(map['presentationStyle']),
+      EnumMethod.value =>
+        ModalPresentationStyle.fromValue(map['presentationStyle']),
+      EnumMethod.name => ModalPresentationStyle.byName(map['presentationStyle'])
+    };
     instance.shouldCloseOnBackButtonPressed =
         map['shouldCloseOnBackButtonPressed'];
     instance.toolbarBottomTranslucent = map['toolbarBottomTranslucent'];
@@ -284,14 +310,19 @@ class InAppBrowserSettings
         ? UtilColor.fromStringRepresentation(map['toolbarTopBarTintColor'])
         : null;
     instance.toolbarTopTranslucent = map['toolbarTopTranslucent'];
-    instance.transitionStyle =
-        ModalTransitionStyle.fromNativeValue(map['transitionStyle']);
+    instance.transitionStyle = switch (enumMethod ?? EnumMethod.nativeValue) {
+      EnumMethod.nativeValue =>
+        ModalTransitionStyle.fromNativeValue(map['transitionStyle']),
+      EnumMethod.value =>
+        ModalTransitionStyle.fromValue(map['transitionStyle']),
+      EnumMethod.name => ModalTransitionStyle.byName(map['transitionStyle'])
+    };
     instance.windowAlphaValue = map['windowAlphaValue'];
     return instance;
   }
 
   ///Converts instance to a map.
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({EnumMethod? enumMethod}) {
     return {
       "allowGoBackWithBackButton": allowGoBackWithBackButton,
       "closeButtonCaption": closeButtonCaption,
@@ -306,7 +337,11 @@ class InAppBrowserSettings
       "hideToolbarTop": hideToolbarTop,
       "hideUrlBar": hideUrlBar,
       "menuButtonColor": menuButtonColor?.toHex(),
-      "presentationStyle": presentationStyle?.toNativeValue(),
+      "presentationStyle": switch (enumMethod ?? EnumMethod.nativeValue) {
+        EnumMethod.nativeValue => presentationStyle?.toNativeValue(),
+        EnumMethod.value => presentationStyle?.toValue(),
+        EnumMethod.name => presentationStyle?.name()
+      },
       "shouldCloseOnBackButtonPressed": shouldCloseOnBackButtonPressed,
       "toolbarBottomBackgroundColor": toolbarBottomBackgroundColor?.toHex(),
       "toolbarBottomTintColor": toolbarBottomTintColor?.toHex(),
@@ -316,13 +351,29 @@ class InAppBrowserSettings
       "toolbarTopFixedTitle": toolbarTopFixedTitle,
       "toolbarTopTintColor": toolbarTopTintColor?.toHex(),
       "toolbarTopTranslucent": toolbarTopTranslucent,
-      "transitionStyle": transitionStyle?.toNativeValue(),
+      "transitionStyle": switch (enumMethod ?? EnumMethod.nativeValue) {
+        EnumMethod.nativeValue => transitionStyle?.toNativeValue(),
+        EnumMethod.value => transitionStyle?.toValue(),
+        EnumMethod.name => transitionStyle?.name()
+      },
       "windowAlphaValue": windowAlphaValue,
-      "windowFrame": windowFrame?.toMap(),
-      "windowStyleMask": windowStyleMask?.toNativeValue(),
-      "windowTitlebarSeparatorStyle":
-          windowTitlebarSeparatorStyle?.toNativeValue(),
-      "windowType": windowType?.toNativeValue(),
+      "windowFrame": windowFrame?.toMap(enumMethod: enumMethod),
+      "windowStyleMask": switch (enumMethod ?? EnumMethod.nativeValue) {
+        EnumMethod.nativeValue => windowStyleMask?.toNativeValue(),
+        EnumMethod.value => windowStyleMask?.toValue(),
+        EnumMethod.name => windowStyleMask?.name()
+      },
+      "windowTitlebarSeparatorStyle": switch (
+          enumMethod ?? EnumMethod.nativeValue) {
+        EnumMethod.nativeValue => windowTitlebarSeparatorStyle?.toNativeValue(),
+        EnumMethod.value => windowTitlebarSeparatorStyle?.toValue(),
+        EnumMethod.name => windowTitlebarSeparatorStyle?.name()
+      },
+      "windowType": switch (enumMethod ?? EnumMethod.nativeValue) {
+        EnumMethod.nativeValue => windowType?.toNativeValue(),
+        EnumMethod.value => windowType?.toValue(),
+        EnumMethod.name => windowType?.name()
+      },
     };
   }
 

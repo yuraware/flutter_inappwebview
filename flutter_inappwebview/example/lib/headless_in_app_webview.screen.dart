@@ -24,6 +24,7 @@ class _HeadlessInAppWebViewExampleScreenState
         : WebUri("http://localhost:${Uri.base.port}/page.html");
 
     headlessWebView = HeadlessInAppWebView(
+      webViewEnvironment: webViewEnvironment,
       initialUrlRequest: URLRequest(url: url),
       initialSettings: InAppWebViewSettings(
         isInspectable: kDebugMode,
@@ -34,12 +35,12 @@ class _HeadlessInAppWebViewExampleScreenState
       onConsoleMessage: (controller, consoleMessage) {
         print("CONSOLE MESSAGE: " + consoleMessage.message);
       },
-      onLoadStart: (controller, url) async {
+      onLoadStart: (controller, url) {
         setState(() {
           this.url = url.toString();
         });
       },
-      onLoadStop: (controller, url) async {
+      onLoadStop: (controller, url) {
         setState(() {
           this.url = url.toString();
         });
