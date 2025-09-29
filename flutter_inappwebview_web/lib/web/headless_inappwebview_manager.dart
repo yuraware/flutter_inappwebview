@@ -25,8 +25,8 @@ class HeadlessInAppWebViewManager {
       try {
         return await handleMethod(call);
       } on Error catch (e) {
-        print(e);
-        print(e.stackTrace);
+        //print(e);
+        //print(e.stackTrace);
       }
     });
   }

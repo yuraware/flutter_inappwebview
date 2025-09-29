@@ -70,7 +70,7 @@ public class InAppWebViewManager: ChannelDelegate {
             webViewForUserAgent?.evaluateJavaScript("navigator.userAgent") { (value, error) in
 
                 if error != nil {
-                    print("Error occurred to get userAgent")
+                    //print("Error occurred to get userAgent")
                     self.webViewForUserAgent = nil
                     completionHandler(nil)
                     return
@@ -80,7 +80,7 @@ public class InAppWebViewManager: ChannelDelegate {
                     self.defaultUserAgent = unwrappedUserAgent
                     completionHandler(self.defaultUserAgent)
                 } else {
-                    print("Failed to get userAgent")
+                    //print("Failed to get userAgent")
                 }
                 self.webViewForUserAgent = nil
             }

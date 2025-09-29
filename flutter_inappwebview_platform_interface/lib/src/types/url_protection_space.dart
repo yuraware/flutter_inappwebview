@@ -19,8 +19,8 @@ List<X509Certificate>? _distinguishedNamesDeserializer(dynamic value,
       try {
         distinguishedNames!.add(X509Certificate.fromData(data: data));
       } catch (e, stacktrace) {
-        print(e);
-        print(stacktrace);
+        //print(e);
+        //print(stacktrace);
       }
     });
   }

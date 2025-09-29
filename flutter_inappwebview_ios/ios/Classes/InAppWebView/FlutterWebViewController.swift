@@ -119,7 +119,7 @@ public class FlutterWebViewController: NSObject, FlutterPlatformView, Disposable
                             encodedContentRuleList: blockRules) { (contentRuleList, error) in
 
                                 if let error = error {
-                                    print(error.localizedDescription)
+                                    // print(error.localizedDescription)
                                     return
                                 }
 
@@ -130,7 +130,7 @@ public class FlutterWebViewController: NSObject, FlutterPlatformView, Disposable
                         }
                         return
                     } catch {
-                        print(error.localizedDescription)
+                        //print(error.localizedDescription)
                     }
                 }
             }
@@ -205,7 +205,7 @@ public class FlutterWebViewController: NSObject, FlutterPlatformView, Disposable
     }
     
     deinit {
-        debugPrint("FlutterWebViewController - dealloc")
+        // debugPrint("FlutterWebViewController - dealloc")
         dispose()
     }
 }

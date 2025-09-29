@@ -33,7 +33,7 @@ public class Util {
             do {
                 return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
             } catch {
-                print(error.localizedDescription)
+                //print(error.localizedDescription)
             }
         }
         return nil

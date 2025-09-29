@@ -66,7 +66,7 @@ public class PullToRefreshControl: UIRefreshControl, Disposable {
     }
     
     deinit {
-        debugPrint("PullToRefreshControl - dealloc")
+        //debugPrint("PullToRefreshControl - dealloc")
         dispose()
     }
 }

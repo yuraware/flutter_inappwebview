@@ -323,7 +323,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
             if let webView = webView {
                 webView.getSelectedText { (value, error) in
                     if let err = error {
-                        print(err.localizedDescription)
+                        //print(err.localizedDescription)
                         result("")
                         return
                     }
@@ -363,7 +363,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
             if let webView = webView {
                 webView.requestFocusNodeHref { (value, error) in
                     if let err = error {
-                        print(err.localizedDescription)
+                        //print(err.localizedDescription)
                         result(nil)
                         return
                     }
@@ -377,7 +377,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
             if let webView = webView {
                 webView.requestImageRef { (value, error) in
                     if let err = error {
-                        print(err.localizedDescription)
+                        //print(err.localizedDescription)
                         result(nil)
                         return
                     }
@@ -1225,7 +1225,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
     }
     
     deinit {
-        debugPrint("WebViewChannelDelegate - dealloc")
+        //debugPrint("WebViewChannelDelegate - dealloc")
         dispose()
     }
 }

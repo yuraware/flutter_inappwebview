@@ -1316,7 +1316,7 @@ class AndroidInAppWebViewController extends PlatformInAppWebViewController
             }
           } else {
             // ignore: deprecated_member_use_from_same_package
-            _inAppBrowserEventHandler!.onPrint(uri);
+            //_inAppBrowserEventHandler!.onPrint(uri);
             return await _inAppBrowserEventHandler!
                 .onPrintRequest(uri, printJob);
           }

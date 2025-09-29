@@ -39,8 +39,8 @@ class SslCertificate {
     try {
       x509Certificate = X509Certificate.fromData(data: map["x509Certificate"]);
     } catch (e, stacktrace) {
-      print(e);
-      print(stacktrace);
+      //print(e);
+      //print(stacktrace);
     }
     if (Util.isIOS) {
       if (x509Certificate != null) {

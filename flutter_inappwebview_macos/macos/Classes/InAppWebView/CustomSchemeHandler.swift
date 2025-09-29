@@ -29,7 +29,7 @@ public class CustomSchemeHandler: NSObject, WKURLSchemeHandler {
             return false
         }
         callback.error = { (code: String, message: String?, details: Any?) in
-            print(code + ", " + (message ?? ""))
+            //print(code + ", " + (message ?? ""))
         }
         
         if let channelDelegate = inAppWebView.channelDelegate {

@@ -71,7 +71,7 @@ public class WebMessageChannel: FlutterMethodCallDelegate {
     }
     
     deinit {
-        debugPrint("WebMessageChannel - dealloc")
+        //debugPrint("WebMessageChannel - dealloc")
         dispose()
     }
 }

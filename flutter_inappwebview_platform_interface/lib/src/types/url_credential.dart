@@ -16,8 +16,8 @@ List<X509Certificate>? _certificatesDeserializer(dynamic value,
       try {
         certificates!.add(X509Certificate.fromData(data: data));
       } catch (e, stacktrace) {
-        print(e);
-        print(stacktrace);
+        //print(e);
+        //print(stacktrace);
       }
     });
   }

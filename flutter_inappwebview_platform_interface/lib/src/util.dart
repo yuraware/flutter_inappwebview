@@ -574,7 +574,7 @@ void debugLog(
     if (!debugLoggingSettings.usePrint) {
       developer.log(message, name: className);
     } else {
-      print('[${className}] $message');
+      //print('[${className}] $message');
     }
   }
 }
@@ -630,8 +630,8 @@ extension InternalChannelController on ChannelController {
       try {
         return await handler!(call);
       } on Error catch (e) {
-        print(e);
-        print(e.stackTrace);
+        //print(e);
+        //print(e.stackTrace);
       }
     });
   }

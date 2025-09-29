@@ -114,7 +114,7 @@ public class InAppBrowserWebViewController: NSViewController, InAppBrowserDelega
                             encodedContentRuleList: blockRules) { (contentRuleList, error) in
 
                                 if let error = error {
-                                    print(error.localizedDescription)
+                                    //print(error.localizedDescription)
                                     return
                                 }
 
@@ -125,7 +125,7 @@ public class InAppBrowserWebViewController: NSViewController, InAppBrowserDelega
                         }
                         return
                     } catch {
-                        print(error.localizedDescription)
+                        //print(error.localizedDescription)
                     }
                 }
             }

@@ -113,8 +113,8 @@ class DefaultInAppLocalhostServer extends PlatformInAppLocalhostServer {
                 .asUint8List();
           } catch (e) {
             if (kDebugMode) {
-              print(Uri.decodeFull(path));
-              print(e.toString());
+              //print(Uri.decodeFull(path));
+              //print(e.toString());
             }
             request.response.close();
             return;
@@ -130,7 +130,7 @@ class DefaultInAppLocalhostServer extends PlatformInAppLocalhostServer {
           }
 
           request.response.headers.contentType = contentType;
-          print(request.response.headers);
+          //print(request.response.headers);
           request.response.add(body);
           request.response.close();
         });
@@ -139,7 +139,7 @@ class DefaultInAppLocalhostServer extends PlatformInAppLocalhostServer {
       });
     }, (e, stackTrace) {
       if (kDebugMode) {
-        print('Error: $e $stackTrace');
+        //print('Error: $e $stackTrace');
       }
     });
 
@@ -153,7 +153,7 @@ class DefaultInAppLocalhostServer extends PlatformInAppLocalhostServer {
     }
     await this._server!.close(force: true);
     if (kDebugMode) {
-      print('Server running on http://localhost:$_port closed');
+      //print('Server running on http://localhost:$_port closed');
     }
     this._started = false;
     this._server = null;

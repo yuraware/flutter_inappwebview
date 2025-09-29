@@ -94,7 +94,7 @@ public class HeadlessInAppWebView: Disposable {
     }
     
     deinit {
-        debugPrint("HeadlessInAppWebView - dealloc")
+        //debugPrint("HeadlessInAppWebView - dealloc")
         dispose()
     }
 }

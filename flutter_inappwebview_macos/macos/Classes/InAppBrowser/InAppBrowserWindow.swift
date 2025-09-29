@@ -381,7 +381,7 @@ public class InAppBrowserWindow: NSWindow, NSWindowDelegate, NSToolbarDelegate, 
     }
     
     deinit {
-        debugPrint("InAppBrowserWindow - dealloc")
+        //debugPrint("InAppBrowserWindow - dealloc")
         dispose()
     }
 }

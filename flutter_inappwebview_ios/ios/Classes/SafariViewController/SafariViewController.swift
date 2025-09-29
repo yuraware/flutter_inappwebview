@@ -135,7 +135,7 @@ public class SafariViewController: SFSafariViewController, SFSafariViewControlle
     }
     
     deinit {
-        debugPrint("SafariViewController - dealloc")
+        //debugPrint("SafariViewController - dealloc")
         dispose()
     }
 }

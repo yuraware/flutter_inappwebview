@@ -295,7 +295,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
         case .getContentHeight:
             webView?.getContentHeight { contentHeight, error in
                 if let error = error {
-                    print(error)
+                    //print(error)
                     result(nil)
                     return
                 }
@@ -305,7 +305,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
         case .getContentWidth:
             webView?.getContentWidth { contentWidth, error in
                 if let error = error {
-                    print(error)
+                    //print(error)
                     result(nil)
                     return
                 }
@@ -329,7 +329,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
             if let webView = webView {
                 webView.getSelectedText { (value, error) in
                     if let err = error {
-                        print(err.localizedDescription)
+                        //print(err.localizedDescription)
                         result("")
                         return
                     }
@@ -344,7 +344,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
             if let webView = webView {
                 webView.getScrollX { scrollX, error in
                     if let error = error {
-                        print(error)
+                        //print(error)
                         result(nil)
                         return
                     }
@@ -359,7 +359,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
             if let webView = webView {
                 webView.getScrollY { scrollY, error in
                     if let error = error {
-                        print(error)
+                        //print(error)
                         result(nil)
                         return
                     }
@@ -528,7 +528,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
             if let webView = webView {
                 webView.canScrollVertically { canScrollVertically, error in
                     if let error = error {
-                        print(error)
+                        //print(error)
                         result(false)
                         return
                     }
@@ -542,7 +542,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
             if let webView = webView {
                 webView.canScrollHorizontally { canScrollHorizontally, error in
                     if let error = error {
-                        print(error)
+                        //print(error)
                         result(false)
                         return
                     }
@@ -1188,7 +1188,7 @@ public class WebViewChannelDelegate: ChannelDelegate {
     }
     
     deinit {
-        debugPrint("WebViewChannelDelegate - dealloc")
+        //debugPrint("WebViewChannelDelegate - dealloc")
         dispose()
     }
 }

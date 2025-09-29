@@ -141,7 +141,7 @@ public class WebMessagePort: NSObject {
     }
     
     deinit {
-        debugPrint("WebMessagePort - dealloc")
+        //debugPrint("WebMessagePort - dealloc")
         dispose()
     }
 }

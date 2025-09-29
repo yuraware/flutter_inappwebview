@@ -59,7 +59,7 @@ public class WebMessage: NSObject, Disposable {
     }
     
     deinit {
-        debugPrint("WebMessage - dealloc")
+        //debugPrint("WebMessage - dealloc")
         dispose()
     }
 }

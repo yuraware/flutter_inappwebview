@@ -103,7 +103,7 @@ public class WebAuthenticationSession: NSObject, ASWebAuthenticationPresentation
     }
     
     deinit {
-        debugPrint("WebAuthenticationSession - dealloc")
+        //debugPrint("WebAuthenticationSession - dealloc")
         dispose()
     }
 }
