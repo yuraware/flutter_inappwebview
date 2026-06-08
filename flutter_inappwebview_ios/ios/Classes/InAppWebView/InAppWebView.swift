@@ -99,23 +99,69 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
         panGestureRecognizer.addTarget(self, action: #selector(endDraggingDetected))
     }
     
+    // Custom top content inset (in points) used to render the web content below
+    // a floating, translucent app toolbar (iOS Safari-style overlay chrome).
+    // It is driven from the `maximumViewportInset.top` setting and is preserved
+    // across frame changes and keyboard events. Defaults to 0 (no inset), which
+    // keeps the original "content ignores all insets" behavior.
+    public var customTopContentInset: CGFloat = 0 {
+        didSet {
+            if customTopContentInset != oldValue {
+                applyContentInsetsPreservingCustomTop()
+                pinContentOffsetToTopIfNeeded(previousTopInset: oldValue)
+            }
+        }
+    }
+
+    private func desiredContentInset() -> UIEdgeInsets {
+        return UIEdgeInsets(top: customTopContentInset, left: 0, bottom: 0, right: 0)
+    }
+
+    // Applies our desired content inset while still cancelling any system-added
+    // (safe area / keyboard) insets, preserving the plugin's original goal of
+    // keeping the *system* contribution at zero — except for our custom top.
+    func applyContentInsetsPreservingCustomTop() {
+        let desired = desiredContentInset()
+        scrollView.contentInset = desired
+        if #available(iOS 11, *) {
+            let systemAdded = UIEdgeInsets(
+                top: scrollView.adjustedContentInset.top - scrollView.contentInset.top,
+                left: scrollView.adjustedContentInset.left - scrollView.contentInset.left,
+                bottom: scrollView.adjustedContentInset.bottom - scrollView.contentInset.bottom,
+                right: scrollView.adjustedContentInset.right - scrollView.contentInset.right)
+            if systemAdded != .zero {
+                scrollView.contentInset = UIEdgeInsets(
+                    top: desired.top - systemAdded.top,
+                    left: desired.left - systemAdded.left,
+                    bottom: desired.bottom - systemAdded.bottom,
+                    right: desired.right - systemAdded.right)
+            }
+        }
+        let indicatorInsets = UIEdgeInsets(top: customTopContentInset, left: 0, bottom: 0, right: 0)
+        if #available(iOS 11.1, *) {
+            scrollView.verticalScrollIndicatorInsets = indicatorInsets
+        } else {
+            scrollView.scrollIndicatorInsets = indicatorInsets
+        }
+    }
+
+    // When the inset changes while the page is still at the very top, keep the
+    // top of the content visible just below the toolbar (mirrors Safari).
+    private func pinContentOffsetToTopIfNeeded(previousTopInset: CGFloat) {
+        let currentY = scrollView.contentOffset.y
+        let atTop = currentY <= -previousTopInset + 1
+        if atTop {
+            scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: -customTopContentInset), animated: false)
+        }
+    }
+
     override public var frame: CGRect {
         get {
             return super.frame
         }
         set {
             super.frame = newValue
-            
-            scrollView.contentInset = .zero
-            if #available(iOS 11, *) {
-                // Above iOS 11, adjust contentInset to compensate the adjustedContentInset so the sum will
-                // always be 0.
-                if (scrollView.adjustedContentInset != .zero) {
-                    let insetToAdjust = scrollView.adjustedContentInset
-                    scrollView.contentInset = UIEdgeInsets(top: -insetToAdjust.top, left: -insetToAdjust.left,
-                                                           bottom: -insetToAdjust.bottom, right: -insetToAdjust.right)
-                }
-            }
+            applyContentInsetsPreservingCustomTop()
         }
     }
     
@@ -124,24 +170,21 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
     @objc func keyboardWillShow(notification: NSNotification) {
         // UIResponder.keyboardWillShowNotification will be fired also
         // when changing focus between HTML inputs with the keyboard already open
-        if (scrollView.adjustedContentInset != .zero) {
+        if scrollView.adjustedContentInset.bottom > 0 {
             // if resizeToAvoidBottomInset is false on Flutter side,
-            // scrollView.adjustedContentInset.bottom will be > 0
-            if scrollView.adjustedContentInset.bottom > 0 {
-                // if the scrollView.contentInset has already been fixed, do nothing
-                if !_scrollViewContentInsetAdjusted {
-                    _scrollViewContentInsetAdjusted = true
-                    let insetToAdjust = scrollView.adjustedContentInset
-                    scrollView.contentInset = UIEdgeInsets(top: -insetToAdjust.top, left: -insetToAdjust.left,
-                                                           bottom: -insetToAdjust.bottom, right: -insetToAdjust.right)
-                }
-            } else {
-                scrollView.contentInset = .zero
+            // scrollView.adjustedContentInset.bottom will be > 0.
+            // Cancel the system-added bottom inset while keeping our custom top.
+            if !_scrollViewContentInsetAdjusted {
+                _scrollViewContentInsetAdjusted = true
+                applyContentInsetsPreservingCustomTop()
             }
+        } else {
+            applyContentInsetsPreservingCustomTop()
         }
     }
     @objc func keyboardWillHide(notification: NSNotification) {
         _scrollViewContentInsetAdjusted = false
+        applyContentInsetsPreservingCustomTop()
     }
     
     required public init(coder aDecoder: NSCoder) {
@@ -533,6 +576,8 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
                     setMinimumViewportInset(minViewportInset, maximumViewportInset: maxViewportInset)
                 }
             }
+            // Drive the Safari-style top content inset from maximumViewportInset.top.
+            customTopContentInset = settings.maximumViewportInset?.top ?? 0
             
             if #available(iOS 16.0, *) {
                 isFindInteractionEnabled = settings.isFindInteractionEnabled
@@ -1365,6 +1410,9 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
                let minViewportInset = newSettings.minimumViewportInset, let maxViewportInset = newSettings.maximumViewportInset {
                 setMinimumViewportInset(minViewportInset, maximumViewportInset: maxViewportInset)
             }
+        }
+        if newSettingsMap["maximumViewportInset"] != nil {
+            customTopContentInset = newSettings.maximumViewportInset?.top ?? 0
         }
         if #available(iOS 16.0, *) {
             if newSettingsMap["isFindInteractionEnabled"] != nil, settings?.isFindInteractionEnabled != newSettings.isFindInteractionEnabled {
