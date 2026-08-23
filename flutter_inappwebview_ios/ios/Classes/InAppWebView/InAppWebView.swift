@@ -113,6 +113,53 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
         }
     }
 
+    // MARK: - Viewport insets (WKWebView.setMinimumViewportInset)
+    //
+    // `setMinimumViewportInset(_:maximumViewportInset:)` raises an uncatchable
+    // NSInvalidArgumentException when the insets do not fit the view's CURRENT
+    // frame. Flutter creates every platform view with CGRectZero and sizes it
+    // later, and on iOS 15.5–15.x WebKit throws for *any* insets (even .zero)
+    // while the frame is empty. So never call the setter directly: validate
+    // first (see ViewportInsetsValidation) and, if the frame cannot fit the
+    // insets yet, park them and retry once the view is laid out.
+    private var pendingViewportInsets: (minimum: UIEdgeInsets, maximum: UIEdgeInsets)?
+    private var appliedViewportInsets: (minimum: UIEdgeInsets, maximum: UIEdgeInsets)?
+
+    @available(iOS 15.5, *)
+    func applyViewportInsets(minimum: UIEdgeInsets, maximum: UIEdgeInsets) {
+        let isReset = minimum == .zero && maximum == .zero
+        let hasNothingApplied = appliedViewportInsets == nil
+        switch ViewportInsetsValidation.decide(frameSize: frame.size, minimum: minimum, maximum: maximum) {
+        case .apply:
+            pendingViewportInsets = nil
+            if let applied = appliedViewportInsets, applied.minimum == minimum, applied.maximum == maximum {
+                return
+            }
+            if isReset && hasNothingApplied {
+                // WebKit's default is already zero; the setter call is pure risk.
+                return
+            }
+            setMinimumViewportInset(minimum, maximumViewportInset: maximum)
+            appliedViewportInsets = (minimum, maximum)
+        case .deferUntilLayout:
+            pendingViewportInsets = (isReset && hasNothingApplied) ? nil : (minimum, maximum)
+        case .reject(let reason):
+            pendingViewportInsets = nil
+            print("InAppWebView: ignoring invalid viewport insets – \(reason)")
+        }
+    }
+
+    private func applyPendingViewportInsetsIfPossible() {
+        if #available(iOS 15.5, *), let pending = pendingViewportInsets {
+            applyViewportInsets(minimum: pending.minimum, maximum: pending.maximum)
+        }
+    }
+
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        applyPendingViewportInsetsIfPossible()
+    }
+
     private func desiredContentInset() -> UIEdgeInsets {
         return UIEdgeInsets(top: customTopContentInset, left: 0, bottom: 0, right: 0)
     }
@@ -162,6 +209,7 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
         set {
             super.frame = newValue
             applyContentInsetsPreservingCustomTop()
+            applyPendingViewportInsetsIfPossible()
         }
     }
     
@@ -573,7 +621,7 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
             
             if #available(iOS 15.5, *) {
                 if let minViewportInset = settings.minimumViewportInset, let maxViewportInset = settings.maximumViewportInset {
-                    setMinimumViewportInset(minViewportInset, maximumViewportInset: maxViewportInset)
+                    applyViewportInsets(minimum: minViewportInset, maximum: maxViewportInset)
                 }
             }
             // Drive the Safari-style top content inset from maximumViewportInset.top.
@@ -1408,7 +1456,7 @@ public class InAppWebView: WKWebView, UIScrollViewDelegate, WKUIDelegate,
             if ((newSettingsMap["minimumViewportInset"] != nil && settings?.minimumViewportInset != newSettings.minimumViewportInset) ||
                (newSettingsMap["maximumViewportInset"] != nil && settings?.maximumViewportInset != newSettings.maximumViewportInset)),
                let minViewportInset = newSettings.minimumViewportInset, let maxViewportInset = newSettings.maximumViewportInset {
-                setMinimumViewportInset(minViewportInset, maximumViewportInset: maxViewportInset)
+                applyViewportInsets(minimum: minViewportInset, maximum: maxViewportInset)
             }
         }
         if newSettingsMap["maximumViewportInset"] != nil {
